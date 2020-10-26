@@ -1,0 +1,62 @@
+{
+    "title": "Pagamentos e Garantias",
+    "programName": "Profero",
+    "packageName": "pagamentos_garantias",
+    "requirements": [
+        "python-pptx==0.6.18"
+    ],
+    "allowedOutputExtensions": [
+        {
+            "name": "Excel",
+            "extensions": [
+                "xlsx"
+            ]
+        }
+    ],
+    "defaultSettings": {
+        "janela": {
+            "title": "Janela",
+            "entries": {
+                "dataWindowClosesOnFinish": {
+                    "title": "Fechar j. de dados ao completar",
+                    "setting": true,
+                    "type": "checkbox"
+                }
+            }
+        },
+        "formulario": {
+            "title": "Formulário",
+            "entries": {
+                "useDecimalDot": {
+                    "title": "Usar ponto decimal",
+                    "setting": false,
+                    "type": "checkbox"
+                }
+            }
+        }
+    },
+    "form": [
+        {
+            "type": "page-list",
+            "pages": {
+                "title": [
+                    {
+                        "id": "client-logo",
+                        "label": "Logo Cliente",
+                        "type": "file-input",
+                        "allowedExtensions": [
+                            {
+                                "name": "Image",
+                                "extensions": [
+                                    "jpg", "png"
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "disclaimer": [],
+                "table-of-contents": []
+            }
+        }
+    ]
+}
