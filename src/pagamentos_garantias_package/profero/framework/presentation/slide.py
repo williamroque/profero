@@ -1,3 +1,6 @@
+from pptx.util import Pt
+
+
 class Slide():
     def __init__(self, inputs, slide_id, slide_type, background, parent_presentation):
         self.inputs = inputs
@@ -7,8 +10,8 @@ class Slide():
 
         self.parent_presentation = parent_presentation
 
-        self.slide = parent_presentation.slides.add_slide(
-            parent_presentation.slide_layouts[self.slide_type]
+        self.slide = parent_presentation.presentation.slides.add_slide(
+            parent_presentation.presentation.slide_layouts[self.slide_type]
         )
 
         self.background = background
@@ -16,9 +19,9 @@ class Slide():
         if self.background != None:
             background_image = self.slide.shapes.add_picture(
                 self.background,
-                0, 0,
-                width=parent_presentation.slide_width,
-                height=parent_presentation.slide_height
+                Pt(-1), Pt(-1),
+                width=parent_presentation.presentation.slide_width + Pt(2),
+                height=parent_presentation.presentation.slide_height + Pt(3)
             )
 
             self.slide.shapes._spTree.remove(background_image._element)

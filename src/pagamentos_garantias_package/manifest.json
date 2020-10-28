@@ -37,25 +37,45 @@
     },
     "form": [
         {
+            "type": "input-row",
+            "inputs": [
+                {
+                    "id": "primeira-serie",
+                    "label": "Primeira Série",
+                    "type": "int",
+                    "width": 25
+                }
+            ]
+        },
+        {
+            "id": "client-logo",
+            "label": "Logo Cliente",
+            "type": "file-input",
+            "allowedExtensions": [
+                {
+                    "name": "Image",
+                    "extensions": [
+                        "jpg", "png"
+                    ]
+                }
+            ]
+        },
+        {
             "type": "page-list",
+            "id": "slides",
             "pages": {
-                "title": [
-                    {
-                        "id": "client-logo",
-                        "label": "Logo Cliente",
-                        "type": "file-input",
-                        "allowedExtensions": [
-                            {
-                                "name": "Image",
-                                "extensions": [
-                                    "jpg", "png"
-                                ]
-                            }
-                        ]
-                    }
-                ],
-                "disclaimer": [],
-                "table-of-contents": []
+                "title": {
+                    "title": "Título",
+                    "form": []
+                },
+                "disclaimer": {
+                    "title": "Disclaimer",
+                    "form": []
+                },
+                "table-of-contents": {
+                    "title": "Temas a serem abordados",
+                    "form": []
+                }
             }
         }
     ]
