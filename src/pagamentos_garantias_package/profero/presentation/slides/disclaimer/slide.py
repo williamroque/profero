@@ -1,11 +1,12 @@
 from pptx.util import Cm, Pt
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.dml.color import RGBColor
 
 from profero.framework.presentation.slide import Slide as FSlide
 from profero.framework.presentation.row import Row
 from profero.framework.presentation.cell import Cell
-from profero.presentation.slides.common.header import *
+from profero.presentation.slides.common.header import HeaderRow
 
 
 disclaimer_string = """
@@ -21,11 +22,46 @@ Ao preparar esta apresentação, a LogosSec não realizou nenhuma verificação 
 """.strip()
 
 
+class DisclaimerCell(Cell):
+    def __init__(self, inputs, slide_width, parent_row):
+        super().__init__(
+            inputs,
+            {
+                'width': slide_width,
+                'x_offset': 0
+            },
+            'disclaimer', 0,
+            parent_row
+        )
+
+    def render(self, slide):
+        box_width = self.width * .87
+        box_height = self.parent_row.height * .9
+
+        disclaimer = self.create_rect(
+            self.x_offset + self.width / 2 - box_width / 2,
+            self.parent_row.y_offset + self.parent_row.height / 2 - box_height / 2,
+            box_width, box_height
+        )
+        self.set_shape_transparency(disclaimer, 100)
+
+        self.set_text(
+            disclaimer,
+            disclaimer_string,
+            font_family='Helvetica',
+            font_size=Pt(14),
+            color=RGBColor(0x20, 0x38, 0x64),
+            alignment=PP_ALIGN.JUSTIFY,
+            vertical_anchor=MSO_ANCHOR.TOP
+        )
+
+
 class Slide(FSlide):
-    def __init__(self, inputs, props, parent_presentation):
+    def __init__(self, inputs, index, props, parent_presentation):
         super().__init__(
             inputs,
             'title', 6,
+            index,
             None,
             parent_presentation
         )
@@ -33,23 +69,33 @@ class Slide(FSlide):
         slide_height = parent_presentation.presentation.slide_height
         slide_width = parent_presentation.presentation.slide_width
 
-        header_row = Row(
+        header_row = HeaderRow(
             inputs,
             {
                 'height': .25 * slide_height,
                 'y_offset': Cm(0)
+            }, 0,
+            'Disclaimer',
+            slide_width, slide_height,
+            self
+        )
+        self.add_row(header_row)
+
+        disclaimer_row = Row(
+            inputs,
+            {
+                'height': .75 * slide_height,
+                'y_offset': header_row.y_offset + header_row.height
             },
-            'header', 0,
+            'disclaimer', 1,
             self
         )
 
-        client_logo_cell = ClientLogoCell(inputs, inputs.get('client-logo'), slide_width, header_row)
-        header_row.add_cell(client_logo_cell)
+        disclaimer_cell = DisclaimerCell(
+            inputs,
+            slide_width,
+            disclaimer_row
+        )
+        disclaimer_row.add_cell(disclaimer_cell)
 
-        header_cell = HeaderCell(inputs, slide_width, client_logo_cell.x_offset + client_logo_cell.width, header_row)
-        header_row.add_cell(header_cell)
-
-        logo_cell = LogoCell(inputs, slide_width, header_cell.x_offset + header_cell.width, header_row)
-        header_row.add_cell(logo_cell)
-
-        self.add_row(header_row)
+        self.add_row(disclaimer_row)

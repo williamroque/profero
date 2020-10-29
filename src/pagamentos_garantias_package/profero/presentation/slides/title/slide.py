@@ -1,7 +1,7 @@
 from pptx.util import Cm, Pt
 from pptx.enum.shapes import MSO_SHAPE
-from pptx.oxml.xmlchemy import OxmlElement
 from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN
 
 from profero.framework.presentation.slide import Slide as FSlide
 from profero.framework.presentation.row import Row
@@ -61,25 +61,26 @@ class TitleCell(Cell):
         )
 
     def render(self, slide):
-        shape = slide.shapes.add_shape(
-            MSO_SHAPE.RECTANGLE,
+        shape = self.create_rect(
             Pt(-1), self.parent_row.y_offset,
-            self.width + Pt(2), self.parent_row.height
+            self.width + Pt(2), self.parent_row.height,
+            RGBColor(0xB, 0x5D, 0x77), True
         )
 
-        shape.fill.solid()
-        shape.fill.fore_color.rgb = RGBColor(0xB, 0x5D, 0x77)
         self.set_shape_transparency(shape, 53)
-        shape.line.fill.background()
 
         primeira_serie = self.inputs.get('primeira-serie')
-        shape.text = title_string.format(
-            primeira_serie,
-            primeira_serie + 1,
-            time.strftime(
-                '%B de %Y',
-                time.strptime(self.inputs.get('date'), '%b/%Y')
-            )
+        self.set_text(
+            shape,
+            title_string.format(
+                primeira_serie,
+                primeira_serie + 1,
+                time.strftime(
+                    '%B de %Y',
+                    time.strptime(self.inputs.get('date'), '%b/%Y')
+                )
+            ),
+            margin_left=Cm(1)
         )
 
 
@@ -113,13 +114,14 @@ class LogoCell(Cell):
 
 
 class Slide(FSlide):
-    def __init__(self, inputs, props, parent_presentation):
+    def __init__(self, inputs, index, props, parent_presentation):
         with importlib.resources.path(profero.assets, 'background.png') as p:
             background_path = str(p)
 
         super().__init__(
             inputs,
             'title', 6,
+            index,
             background_path,
             parent_presentation
         )

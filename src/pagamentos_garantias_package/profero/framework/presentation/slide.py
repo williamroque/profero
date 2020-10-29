@@ -2,11 +2,13 @@ from pptx.util import Pt
 
 
 class Slide():
-    def __init__(self, inputs, slide_id, slide_type, background, parent_presentation):
+    def __init__(self, inputs, slide_id, slide_type, index, background, parent_presentation):
         self.inputs = inputs
 
         self.slide_id = slide_id
         self.slide_type = slide_type
+
+        self.index = index
 
         self.parent_presentation = parent_presentation
 

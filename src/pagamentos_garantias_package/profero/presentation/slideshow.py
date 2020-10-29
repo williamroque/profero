@@ -15,9 +15,9 @@ class Slideshow(Presentation):
             }
         )
 
-        for slide in inputs.get('slides'):
+        for i, slide in enumerate(inputs.get('slides')):
             module = importlib.import_module(
                 'profero.presentation.slides.{}.slide'.format(slide['id'])
             )
-            self.add_slide(module.Slide(inputs, slide['inputs'], self))
+            self.add_slide(module.Slide(inputs, i, slide['inputs'], self))
 
