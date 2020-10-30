@@ -75,6 +75,80 @@
                 "table-of-contents": {
                     "title": "Temas a serem abordados",
                     "form": []
+                },
+                "dados-operacao": {
+                    "title": "Dados da operação",
+                    "form": [
+                        {
+                            "type": "split-by-series",
+                            "form": [
+                                {
+                                    "type": "input-row",
+                                    "inputs": [
+                                        {
+                                            "id": "instrumento-financeiro",
+                                            "label": "IF",
+                                            "type": "idString",
+                                            "width": 20
+                                        },
+                                        {
+                                            "id": "isin",
+                                            "label": "ISIN",
+                                            "type": "idString",
+                                            "width": 20
+                                        },
+                                        {
+                                            "id": "cedente",
+                                            "label": "Cedente",
+                                            "type": "tableString",
+                                            "width": 20
+                                        },
+                                        {
+                                            "id": "correcao",
+                                            "label": "Correção",
+                                            "type": "idString",
+                                            "width": 20
+                                        },
+                                        {
+                                            "id": "juros",
+                                            "label": "Juros",
+                                            "type": "percentage",
+                                            "width": 20
+                                        }
+                                    ]
+                                },
+                                {
+                                    "type": "input-row",
+                                    "inputs": [
+                                        {
+                                            "id": "data-emissao",
+                                            "label": "Data de Emissão",
+                                            "type": "fullDateString",
+                                            "width": 25
+                                        },
+                                        {
+                                            "id": "vencimento",
+                                            "label": "Vencimento",
+                                            "type": "tableString",
+                                            "width": 25
+                                        },
+                                        {
+                                            "id": "valor-emissao",
+                                            "label": "Valor de Emissão",
+                                            "type": "float",
+                                            "width": 25
+                                        },
+                                        {
+                                            "id": "saldo-devedor",
+                                            "label": "Saldo Devedor",
+                                            "type": "float",
+                                            "width": 25
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         }
