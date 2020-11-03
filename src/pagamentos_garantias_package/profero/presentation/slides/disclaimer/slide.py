@@ -57,10 +57,10 @@ class DisclaimerCell(Cell):
 
 
 class Slide(FSlide):
-    def __init__(self, inputs, index, props, parent_presentation):
+    def __init__(self, inputs, index, props, _, parent_presentation):
         super().__init__(
             inputs,
-            'title', 6,
+            'disclaimer', 6,
             index,
             None,
             parent_presentation

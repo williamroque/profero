@@ -40,7 +40,7 @@ class HeaderCell(Cell):
         super().__init__(
             inputs,
             {
-                'width': slide_width * .62,
+                'width': slide_width * .68,
                 'x_offset': x_offset
             },
             'header', 1,
@@ -48,6 +48,7 @@ class HeaderCell(Cell):
         )
 
         self.title = title
+        self.slide_width = slide_width
 
     def render(self, slide):
         line = self.create_rect(
@@ -65,7 +66,7 @@ class HeaderCell(Cell):
 
         vertical_margin = Cm(.5)
         slide_number = self.create_rect(
-            self.x_offset + self.width / 2 - total_rect_width / 2,
+            self.slide_width / 2 - total_rect_width / 2,
             self.parent_row.y_offset + self.parent_row.height / 2 - rect_height - vertical_margin,
             rect_height, rect_height,
             RGBColor(0x0A, 0x56, 0x79)
@@ -79,7 +80,7 @@ class HeaderCell(Cell):
         )
 
         confidencial = self.create_rect(
-            self.x_offset + self.width / 2 - total_rect_width / 2 + rect_height + spacing,
+            self.slide_width / 2 - total_rect_width / 2 + rect_height + spacing,
             self.parent_row.y_offset + self.parent_row.height / 2 - rect_height - vertical_margin,
             confidencial_width, rect_height,
             RGBColor(0x0A, 0x56, 0x79)
@@ -92,10 +93,10 @@ class HeaderCell(Cell):
             'Helvetica', Pt(10)
         )
 
-        title_width = Cm(10)
+        title_width = Cm(11)
         title_height = Cm(1.11)
         title = self.create_rect(
-            self.x_offset + self.width / 2 - title_width / 2,
+            self.slide_width / 2 - title_width / 2,
             self.parent_row.y_offset + self.parent_row.height / 2 + vertical_margin,
             title_width, title_height
         )
@@ -117,15 +118,15 @@ class LogoCell(Cell):
         super().__init__(
             inputs,
             {
-                'width': slide_width * .23,
+                'width': slide_width * .17,
                 'x_offset': x_offset
             },
             'logo', 2,
             parent_row
         )
 
-        self.picture_width = Cm(5.57)
-        self.picture_height = Cm(2.67)
+        self.picture_width = Cm(4.68)
+        self.picture_height = Cm(2.24)
 
     def render(self, slide):
         with importlib.resources.path(profero.assets, 'logo.png') as p:

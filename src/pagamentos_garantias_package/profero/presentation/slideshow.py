@@ -15,9 +15,23 @@ class Slideshow(Presentation):
             }
         )
 
-        for i, slide in enumerate(inputs.get('slides')):
+        table_of_contents_slide = None
+
+        for slide_i, slide in enumerate(inputs.get('slides')):
             module = importlib.import_module(
                 'profero.presentation.slides.{}.slide'.format(slide['id'])
             )
-            self.add_slide(module.Slide(inputs, i, slide['inputs'], self))
+
+            module_slide = module.Slide(
+                inputs,
+                slide_i,
+                slide['inputs'],
+                table_of_contents_slide,
+                self
+            )
+
+            if module_slide.slide_id == 'table-of-contents':
+                table_of_contents_slide = module_slide
+
+            self.add_slide(module_slide)
 

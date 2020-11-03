@@ -77,7 +77,7 @@ class TitleCell(Cell):
                 primeira_serie + 1,
                 time.strftime(
                     '%B de %Y',
-                    time.strptime(self.inputs.get('date'), '%b/%Y')
+                    time.strptime(self.inputs.get('date'), '%d/%m/%Y')
                 )
             ),
             margin_left=Cm(1)
@@ -114,7 +114,7 @@ class LogoCell(Cell):
 
 
 class Slide(FSlide):
-    def __init__(self, inputs, index, props, parent_presentation):
+    def __init__(self, inputs, index, props, _, parent_presentation):
         with importlib.resources.path(profero.assets, 'background.png') as p:
             background_path = str(p)
 

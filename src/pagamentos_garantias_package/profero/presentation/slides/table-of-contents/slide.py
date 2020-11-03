@@ -36,7 +36,7 @@ class EntryCell(Cell):
         )
         self.set_shape_transparency(self.entry_box, 100)
 
-    def add_entry(self, title, pages):
+    def add_entry(self, title, pages, linked_slide):
         CHARS_PER_ROW = 113
 
         pages.sort()
@@ -62,14 +62,15 @@ class EntryCell(Cell):
             font_size=Pt(12),
             color=RGBColor(0x20, 0x38, 0x64),
             alignment=PP_ALIGN.JUSTIFY,
-            vertical_anchor=MSO_ANCHOR.TOP
+            vertical_anchor=MSO_ANCHOR.TOP,
+            slide_link=linked_slide
         )
 
 class Slide(FSlide):
-    def __init__(self, inputs, index, props, parent_presentation):
+    def __init__(self, inputs, index, props, _, parent_presentation):
         super().__init__(
             inputs,
-            'title', 6,
+            'table-of-contents', 6,
             index,
             None,
             parent_presentation
@@ -100,10 +101,11 @@ class Slide(FSlide):
             self
         )
 
-        entry_cell = EntryCell(inputs, slide_width, entry_row)
+        self.entry_cell = EntryCell(inputs, slide_width, entry_row)
 
-        entry_row.add_cell(entry_cell)
+        entry_row.add_cell(self.entry_cell)
 
         self.add_row(entry_row)
 
-
+    def add_entry(self, *args):
+        self.entry_cell.add_entry(*args)

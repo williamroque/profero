@@ -3,6 +3,8 @@ from pptx.oxml.xmlchemy import OxmlElement
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.dml.color import RGBColor
+from pptx.enum.action import PP_ACTION
+from pptx.opc.constants import RELATIONSHIP_TYPE as RT
 
 
 class Cell():
@@ -25,16 +27,18 @@ class Cell():
 
         shape.shadow.inherit = inherit_shadow
 
-        shape.fill.solid()
-        shape.fill.fore_color.rgb = fill_color
+        self.set_fill_color(shape, fill_color)
 
         if not show_border:
             shape.line.fill.background()
 
         return shape
 
+    def set_fill_color(self, shape, color):
+        shape.fill.solid()
+        shape.fill.fore_color.rgb = color
 
-    def set_text(self, shape, text, alignment=PP_ALIGN.LEFT, font_family='Calibri', font_size=Pt(18), bold=False, italic=None, color=RGBColor(0xFF, 0xFF, 0xFF), link_address=None, vertical_anchor=MSO_ANCHOR.MIDDLE, margin_left=Cm(.25), margin_top=Cm(.25), margin_right=Cm(.25), margin_bottom=Cm(.25)):
+    def set_text(self, shape, text, alignment=PP_ALIGN.LEFT, font_family='Calibri', font_size=Pt(18), bold=False, italic=None, color=RGBColor(0xFF, 0xFF, 0xFF), slide_link=None, vertical_anchor=MSO_ANCHOR.MIDDLE, margin_left=Cm(.25), margin_top=Cm(.25), margin_right=Cm(.25), margin_bottom=Cm(.25)):
         text_frame = shape.text_frame
         text_frame.clear()
 
@@ -48,7 +52,25 @@ class Cell():
         p.alignment = alignment
         run = p.add_run()
         run.text = text
-        run.hyperlink.address = link_address
+
+        if slide_link != None:
+            line_height = font_size + Pt(3) # constant required for lack of proper API call
+            link_rect = self.create_rect(
+                shape.left,
+                shape.top + run.text.count('\n') * line_height + margin_top,
+                shape.width,
+                line_height
+            )
+            self.set_shape_transparency(link_rect, 100)
+
+            rId = self.parent_row.parent_slide.slide.part.relate_to(
+                slide_link.slide.part,
+                RT.SLIDE
+            )
+            rPr = link_rect.text_frame.paragraphs[0].add_run()._r.get_or_add_rPr()
+
+            hlinkClick = rPr.add_hlinkClick(rId)
+            hlinkClick.set('action', 'ppaction://hlinksldjump')
 
         font = run.font
         font.name = font_family
@@ -56,6 +78,7 @@ class Cell():
         font.bold = bold
         font.italic = italic
         font.color.rgb = color
+        font.underline = False
 
     def sub_element(self, parent, tagname, **kwargs):
             element = OxmlElement(tagname)

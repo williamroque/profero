@@ -4,7 +4,7 @@ const subprocess = spawn('python', ['main.py']);
 
 const input = {
     'primeira-serie': 16,
-    'date': 'set/2020',
+    'date': '07/09/2020',
     'output-path': '/Users/jetblack-work/Desktop/slideshow.pptx',
     'project-logo': '/Users/jetblack-work/Desktop/project_logo.png',
     'client-logo': '/Users/jetblack-work/Desktop/client_logo.png',
@@ -29,7 +29,7 @@ const input = {
                     'isin': 'BRLGOSCRI0D1',
                     'cedente': 'Paysage',
                     'correcao': 'IPCA',
-                    'juros': .085
+                    'juros': .085,
                     'data-emissao': '12/03/2020',
                     'vencimento': '07/08/2026',
                     'valor-emissao': 25.9 * 1_000_000,
@@ -40,7 +40,7 @@ const input = {
                     'isin': 'BRLGOSCRI0E9',
                     'cedente': 'Paysage',
                     'correcao': 'IPCA',
-                    'juros': .135
+                    'juros': .135,
                     'data-emissao': '12/03/2020',
                     'vencimento': '07/05/2031',
                     'valor-emissao': 11.1 * 1_000_000,
