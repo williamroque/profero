@@ -149,6 +149,40 @@
                             ]
                         }
                     ]
+                },
+                "garantia": {
+                    "title": "Garantia",
+                    "form": [
+                        {
+                            "type": "input-row",
+                            "inputs": [
+                                {
+                                    "id": "fundo-reserva",
+                                    "label": "Fundo de Reserva",
+                                    "type": "float",
+                                    "width": 25
+                                },
+                                {
+                                    "id": "estoque",
+                                    "label": "Estoque",
+                                    "type": "float",
+                                    "width": 25
+                                },
+                                {
+                                    "id": "direitos-creditorios-inadimplidos",
+                                    "label": "Direitos Creditórios Inadim.",
+                                    "type": "float",
+                                    "width": 25
+                                },
+                                {
+                                    "id": "direitos-creditorios-adimplidos",
+                                    "label": "Direitos Creditórios Adim.",
+                                    "type": "float",
+                                    "width": 25
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
         }

@@ -7,8 +7,14 @@ from profero.framework.presentation.slide import Slide as FSlide
 from profero.framework.presentation.row import Row
 from profero.framework.presentation.cell import Cell
 from profero.presentation.slides.common.header import HeaderRow
+from profero.presentation.slides.common.note import NoteCell
 
 import re
+
+
+NOTE = """
+Valores com base em {}
+""".strip()
 
 
 class TableCell(Cell):
@@ -151,21 +157,6 @@ class TableCell(Cell):
             merge=True
         )
 
-        date_string = self.create_rect(
-            Cm(1), self.parent_row.y_offset + self.parent_row.height - Cm(1.5),
-            Cm(5.5), Cm(1)
-        )
-
-        self.set_shape_transparency(date_string, 100)
-
-        self.set_text(
-            date_string,
-            'Valores com base em {}'.format(self.inputs.get('date')),
-            font_family='Helvetica',
-            font_size=Pt(8),
-            color=RGBColor(0x0F, 0x3B, 0x5E)
-        )
-
         slide = self.parent_row.parent_slide
 
         slide.table_of_contents_slide.add_entry(
@@ -230,6 +221,8 @@ class Slide(FSlide):
         slide_height = parent_presentation.presentation.slide_height
         slide_width = parent_presentation.presentation.slide_width
 
+        note_height = Cm(2.04)
+
         header_row = HeaderRow(
             inputs,
             {
@@ -245,7 +238,7 @@ class Slide(FSlide):
         table_row = Row(
             inputs,
             {
-                'height': .75 * slide_height,
+                'height': .75 * slide_height - note_height,
                 'y_offset': header_row.y_offset + header_row.height
             },
             'table', 1,
@@ -258,4 +251,22 @@ class Slide(FSlide):
 
         self.add_row(table_row)
 
+        note_row = Row(
+            inputs,
+            {
+                'height': note_height,
+                'y_offset': table_row.y_offset + table_row.height
+            },
+            'note', 2,
+            self
+        )
 
+        note_cell = NoteCell(
+            inputs,
+            slide_width,
+            NOTE.format(inputs.get('date')),
+            note_row
+        )
+        note_row.add_cell(note_cell)
+
+        self.add_row(note_row)

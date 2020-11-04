@@ -2,12 +2,15 @@ const { spawn } = require('child_process');
 
 const subprocess = spawn('python', ['main.py']);
 
+const MM = 1_000_000;
+
 const input = {
     'primeira-serie': 16,
     'date': '07/09/2020',
     'output-path': '/Users/jetblack-work/Desktop/slideshow.pptx',
     'project-logo': '/Users/jetblack-work/Desktop/project_logo.png',
     'client-logo': '/Users/jetblack-work/Desktop/client_logo.png',
+    'saldo-cri': 22749472.5888137,
     slides: [
         {
             id: 'title',
@@ -32,8 +35,8 @@ const input = {
                     'juros': .085,
                     'data-emissao': '12/03/2020',
                     'vencimento': '07/08/2026',
-                    'valor-emissao': 25.9 * 1_000_000,
-                    'saldo-devedor': 14.02 * 1_000_000
+                    'valor-emissao': 25.9 * MM,
+                    'saldo-devedor': 0.616383167666443
                 },
                 '17': {
                     'instrumento-financeiro': '18C0722263',
@@ -43,9 +46,18 @@ const input = {
                     'juros': .135,
                     'data-emissao': '12/03/2020',
                     'vencimento': '07/05/2031',
-                    'valor-emissao': 11.1 * 1_000_000,
-                    'saldo-devedor': 8.73 * 1_000_000
+                    'valor-emissao': 11.1 * MM,
+                    'saldo-devedor': 0.383616832333557
                 }
+            }
+        },
+        {
+            id: 'garantia',
+            inputs: {
+                'fundo-reserva': .9 * MM,
+                'estoque': 34980928.786,
+                'direitos-creditorios-inadimplidos':  17357683.41,
+                'direitos-creditorios-adimplidos': 32603090.28
             }
         }
     ]
