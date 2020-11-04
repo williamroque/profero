@@ -63,14 +63,7 @@ class Cell():
             )
             self.set_shape_transparency(link_rect, 100)
 
-            rId = self.parent_row.parent_slide.slide.part.relate_to(
-                slide_link.slide.part,
-                RT.SLIDE
-            )
-            rPr = link_rect.text_frame.paragraphs[0].add_run()._r.get_or_add_rPr()
-
-            hlinkClick = rPr.add_hlinkClick(rId)
-            hlinkClick.set('action', 'ppaction://hlinksldjump')
+            link_rect.click_action.target_slide = slide_link.slide
 
         font = run.font
         font.name = font_family

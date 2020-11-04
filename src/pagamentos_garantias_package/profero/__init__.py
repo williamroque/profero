@@ -25,5 +25,5 @@ def main():
     slideshow = Slideshow(inputs)
     slideshow.render()
 
-    print('Curve presentation.\n', flush=True)
+    print('Presentation rendered.\n', flush=True)
 
