@@ -130,29 +130,26 @@ class TableCell(Cell):
         self.add_table_row('Subordinação', 'Sênior', 'Subordinada')
         self.add_table_row(
             'Valor de Emissão',
-            'R$ {} MM'.format(
-                self.props[primeira_serie]['valor-emissao'] / 1_000_000
+            'R$ {:.2f} MM'.format(
+                self.props[primeira_serie]['valor-emissao'] / 1e+6
             ).replace('.', ','),
-            'R$ {} MM'.format(
-                self.props[segunda_serie]['valor-emissao'] / 1_000_000
+            'R$ {:.2f} MM'.format(
+                self.props[segunda_serie]['valor-emissao'] / 1e+6
             ).replace('.', ',')
         )
         self.add_table_row(
             'Saldo Devedor do CRI',
-            'R$ {} MM'.format(
-                self.props[primeira_serie]['saldo-devedor'] / 1_000_000
+            'R$ {:.2f} MM'.format(
+                self.props[primeira_serie]['saldo-devedor'] * self.inputs.get('saldo-cri') / 1e+6
             ).replace('.', ','),
-            'R$ {} MM'.format(
-                self.props[segunda_serie]['saldo-devedor'] / 1_000_000
+            'R$ {:.2f} MM'.format(
+                self.props[segunda_serie]['saldo-devedor'] * self.inputs.get('saldo-cri') / 1e+6
             ).replace('.', ',')
         )
         self.add_table_row(
             'Saldo dos CRI',
-            'R$ {} MM'.format(
-                (
-                    self.props[primeira_serie]['saldo-devedor'] +\
-                    self.props[segunda_serie]['saldo-devedor']
-                ) / 1_000_000
+            'R$ {:.2f} MM'.format(
+                self.inputs.get('saldo-cri') / 1e+6
             ).replace('.', ','),
             merge=True
         )

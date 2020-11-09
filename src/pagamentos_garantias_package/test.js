@@ -10,7 +10,7 @@ const input = {
     'output-path': '/Users/jetblack-work/Desktop/slideshow.pptx',
     'project-logo': '/Users/jetblack-work/Desktop/project_logo.png',
     'client-logo': '/Users/jetblack-work/Desktop/client_logo.png',
-    'saldo-cri': 22749472.5888137,
+    'saldo-cri': 21973702.7683875,
     slides: [
         {
             id: 'title',
@@ -57,7 +57,8 @@ const input = {
                 'fundo-reserva': .9 * MM,
                 'estoque': 34980928.786,
                 'direitos-creditorios-inadimplidos':  17357683.41,
-                'direitos-creditorios-adimplidos': 32603090.28
+                'direitos-creditorios-adimplidos': 32603090.28,
+                'garantia-minima': 25269758.1836456
             }
         }
     ]
@@ -67,7 +68,8 @@ subprocess.stdin.write(JSON.stringify(input));
 subprocess.stdin.end();
 
 subprocess.stderr.on('data', err => {
-    console.log(err.toString());
+    process.stderr.write(err.toString());
+    process.exit(1)
 });
 
 subprocess.stdout.on('data', out => {

@@ -15,13 +15,13 @@ from profero.presentation.slides.common.note import NoteCell
 
 import re
 import io
-import locale
-
-locale.setlocale(locale.LC_NUMERIC, 'pt_BR')
 
 
 NOTE = """
-Valores com base em {}
+➢ Valores com base em {}
+➢ O Gatilho de Sobregarantia é calculado a partir da razão entre o saldo dos Direitos Creditórios Adimplidos e o saldo devedor dos CRI
+➢ Direitos Creditórios Inadimplidos são os recebíveis cujas prestações não tenham sido pagas a partir do 91º dia a contar do respectivo vencimento
+➢ Limíte de Garantia Mínima: {:.0%}
 """.strip()
 
 
@@ -57,6 +57,22 @@ class ChartCell(Cell):
             'Fundo de Reserva'
         )
 
+        annotations = [
+            (
+                'Saldo do CRI – R$ {:.2f} MM'.format(
+                    self.inputs.get('saldo-cri') / 1e+6
+                ),
+                self.inputs.get('saldo-cri')
+            ),
+            (
+                'Limite de Garantia Mínima – {:.0%} – R$ {:.2f} MM'.format(
+                    self.props['garantia-minima'] / self.inputs.get('saldo-cri'),
+                    self.props['garantia-minima'] / 1e+6
+                ).replace('.', ','),
+                self.props['garantia-minima']
+            )
+        ]
+
         chart_width = 11.24
         chart_height = 4.52
 
@@ -83,10 +99,10 @@ class ChartCell(Cell):
         ax.ticklabel_format(useOffset=False, style='plain')
         ax.yaxis.set_major_formatter(FuncFormatter(lambda x, _: '{:,.2f}'.format(x) if x != 0 else '-'))
 
-        ax.spines['bottom'].set_color('#ccc')
-        ax.spines['top'].set_color('#ccc')
+        ax.spines['bottom'].set_color('#ddd')
+        ax.spines['top'].set_color('#ddd')
         ax.spines['left'].set_color('#666')
-        ax.spines['right'].set_color('#666')
+        ax.spines['right'].set_color('#fff')
 
         ticks = np.arange(10) * 10 ** (len(str(int(sum(values)))) - 1)
         plt.yticks(ticks=ticks)
@@ -117,14 +133,17 @@ class ChartCell(Cell):
             )
             plt.text(
                 0, bottom + value / 2,
-                'R$ {:.2n} MM'.format(value / 1e+6),
+                'R$ {:.2f} MM'.format(
+                    value / 1e+6
+                ).replace('.', ','),
                 ha='center', va='center',
                 color=font_colors[i],
                 fontsize=9,
                 fontweight='bold'
             )
 
-            # use ax.annotate to add arrows: https://matplotlib.org/3.3.2/api/_as_gen/matplotlib.axes.Axes.annotate.html
+        for note, value in annotations:
+            ax.annotate(note, (-.3, value), xytext=(.3, value), arrowprops={'arrowstyle': '<-'})
 
         ax.legend(
             bars,
@@ -213,7 +232,10 @@ class Slide(FSlide):
         note_cell = NoteCell(
             inputs,
             slide_width,
-            NOTE.format(inputs.get('date')),
+            NOTE.format(
+                inputs.get('date'),
+                props['garantia-minima'] / inputs.get('saldo-cri')
+            ),
             note_row
         )
         note_row.add_cell(note_cell)
