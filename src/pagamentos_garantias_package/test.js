@@ -60,7 +60,41 @@ const input = {
                 'garantia-minima':  26161893.4771358,
                 'gatilho-sobregarantia': 32603090.28,
             }
-        }
+        },
+        {
+            id: 'pagamento-investidores',
+            inputs: {
+                'numero-evento': 30,
+                '16': {
+                    'quantidade': 2590,
+                    'juros-unitarios': 38.36501884,
+                    'amortizacao-unitaria': 67.45591265,
+                    'amex-unitaria': 142.63125483,
+                    'pagamento-total-unidade': 248.45218632,
+                    'pagamento-total-cri': 643491.16,
+                    'pagamento-investidores': 591316.20,
+                    'investidores': [
+                        108325.15,
+                        433300.61,
+                        49690.44,
+                    ],
+                },
+                '17': {
+                    'quantidade': 1110,
+                    'juros-unitarios': 85.60461563,
+                    'amortizacao-unitaria': 0,
+                    'amex-unitaria': 207.12779279,
+                    'pagamento-total-unidade': 292.73240842,
+                    'pagamento-total-cri': 324932.97,
+                    'pagamento-investidores': 298587.06,
+                    'investidores': [
+                        59717.41,
+                        238869.65,
+                        0,
+                    ],
+                }
+            }
+        },
     ]
 };
 
