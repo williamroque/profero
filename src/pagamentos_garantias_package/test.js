@@ -10,7 +10,6 @@ const input = {
     'output-path': '/Users/jetblack-work/Desktop/slideshow.pptx',
     'project-logo': '/Users/jetblack-work/Desktop/project_logo.png',
     'client-logo': '/Users/jetblack-work/Desktop/client_logo.png',
-    'saldo-cri': 21973702.7683875,
     slides: [
         {
             id: 'title',
@@ -36,7 +35,7 @@ const input = {
                     'data-emissao': '12/03/2020',
                     'vencimento': '07/08/2026',
                     'valor-emissao': 25.9 * MM,
-                    'saldo-devedor': 0.616383167666443
+                    'saldo-devedor': 14022391.9770339
                 },
                 '17': {
                     'instrumento-financeiro': '18C0722263',
@@ -47,7 +46,7 @@ const input = {
                     'data-emissao': '12/03/2020',
                     'vencimento': '07/05/2031',
                     'valor-emissao': 11.1 * MM,
-                    'saldo-devedor': 0.383616832333557
+                    'saldo-devedor': 8727080.6117798
                 }
             }
         },
@@ -58,7 +57,8 @@ const input = {
                 'estoque': 34980928.786,
                 'direitos-creditorios-inadimplidos':  17357683.41,
                 'direitos-creditorios-adimplidos': 32603090.28,
-                'garantia-minima': 25269758.1836456
+                'garantia-minima':  26161893.4771358,
+                'gatilho-sobregarantia': 32603090.28,
             }
         }
     ]

@@ -38,6 +38,12 @@ class TableCell(Cell):
         table_height = Cm(11.18)
         y_correction = Cm(-1)
 
+        primeira_serie = str(self.inputs.get('primeira-serie'))
+        segunda_serie = str(self.inputs.get('primeira-serie') + 1)
+
+        saldo_primeira = self.props[primeira_serie]['saldo-devedor']
+        saldo_segunda = self.props[segunda_serie]['saldo-devedor']
+
         self.table = slide.shapes.add_table(
             13, 3,
             self.x_offset + self.width / 2 - table_width / 2,
@@ -47,9 +53,6 @@ class TableCell(Cell):
                 y_correction,
             int(table_width), int(table_height)
         ).table
-
-        primeira_serie = str(self.inputs.get('primeira-serie'))
-        segunda_serie = str(self.inputs.get('primeira-serie') + 1)
 
         header_cell = self.table.cell(0, 0)
         self.set_text(
@@ -140,10 +143,10 @@ class TableCell(Cell):
         self.add_table_row(
             'Saldo Devedor do CRI',
             'R$ {:.2f} MM'.format(
-                self.props[primeira_serie]['saldo-devedor'] * self.inputs.get('saldo-cri') / 1e+6
+                saldo_primeira / 1e+6
             ).replace('.', ','),
             'R$ {:.2f} MM'.format(
-                self.props[segunda_serie]['saldo-devedor'] * self.inputs.get('saldo-cri') / 1e+6
+                saldo_segunda / 1e+6
             ).replace('.', ',')
         )
         self.add_table_row(
@@ -214,6 +217,13 @@ class Slide(FSlide):
         self.title = 'Características da operação'
 
         self.table_of_contents_slide = table_of_contents_slide
+
+        primeira_serie = str(self.inputs.get('primeira-serie'))
+        segunda_serie = str(self.inputs.get('primeira-serie') + 1)
+
+        saldo_primeira = props[primeira_serie]['saldo-devedor']
+        saldo_segunda = props[segunda_serie]['saldo-devedor']
+        self.inputs.update('saldo-cri', saldo_primeira + saldo_segunda)
 
         slide_height = parent_presentation.presentation.slide_height
         slide_width = parent_presentation.presentation.slide_width

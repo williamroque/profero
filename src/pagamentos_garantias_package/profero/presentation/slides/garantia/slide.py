@@ -6,6 +6,8 @@ from pptx.dml.color import RGBColor
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
+import matplotlib.path
+import matplotlib.patches as patches
 
 from profero.framework.presentation.slide import Slide as FSlide
 from profero.framework.presentation.row import Row
@@ -70,6 +72,20 @@ class ChartCell(Cell):
                     self.props['garantia-minima'] / 1e+6
                 ).replace('.', ','),
                 self.props['garantia-minima']
+            ),
+            (
+                'Gatilho de Sobregarantia – {:.0%} – R$ {:.2f} MM'.format(
+                    self.props['gatilho-sobregarantia'] / self.inputs.get('saldo-cri'),
+                    self.props['gatilho-sobregarantia'] / 1e+6
+                ).replace('.', ','),
+                self.props['gatilho-sobregarantia']
+            ),
+            (
+                'Garantia Total da Operação – {:.0%} – R$ {:.2f} MM'.format(
+                    values.sum() / self.inputs.get('saldo-cri'),
+                    values.sum() / 1e+6
+                ).replace('.', ','),
+                values.sum()
             )
         ]
 
@@ -143,7 +159,33 @@ class ChartCell(Cell):
             )
 
         for note, value in annotations:
-            ax.annotate(note, (-.3, value), xytext=(.3, value), arrowprops={'arrowstyle': '<-'})
+            arrow = patches.FancyArrowPatch(
+                (-.3, value),
+                (.3, value),
+                arrowstyle='Simple,head_width=5,head_length=10'
+            )
+
+            ax.add_patch(arrow)
+
+            v1 = arrow.get_path().vertices[0:3, :]
+            c1 = arrow.get_path().codes[0:3]
+            p1 = matplotlib.path.Path(v1, c1)
+            pp1 = patches.PathPatch(p1, color='#000', linestyle='--', fill=False, lw=.8)
+            arrow.axes.add_patch(pp1)
+
+            v2 = arrow.get_path().vertices[3:8, :]
+            c2 = arrow.get_path().codes[3:8]
+            c2[0] = 1
+            p2 = matplotlib.path.Path(v2,c2)
+            pp2 = patches.PathPatch(p2, color='#000', lw=1.5, linestyle='-')
+            arrow.axes.add_patch(pp2)
+            arrow.remove()
+
+            ax.text(
+                .31,
+                (value / values.sum() - .01) * values.sum(), note,
+                fontsize=7
+            )
 
         ax.legend(
             bars,
