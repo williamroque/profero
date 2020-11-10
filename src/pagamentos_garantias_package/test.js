@@ -71,7 +71,6 @@ const input = {
                     'amortizacao-unitaria': 67.45591265,
                     'amex-unitaria': 142.63125483,
                     'pagamento-total-unidade': 248.45218632,
-                    'pagamento-total-cri': 643491.16,
                     'pagamento-investidores': 591316.20,
                     'investidores': [
                         108325.15,
@@ -85,7 +84,6 @@ const input = {
                     'amortizacao-unitaria': 0,
                     'amex-unitaria': 207.12779279,
                     'pagamento-total-unidade': 292.73240842,
-                    'pagamento-total-cri': 324932.97,
                     'pagamento-investidores': 298587.06,
                     'investidores': [
                         59717.41,

@@ -64,7 +64,7 @@ class TitleCell(Cell):
         shape = self.create_rect(
             Pt(-1), self.parent_row.y_offset,
             self.width + Pt(2), self.parent_row.height,
-            RGBColor(0xB, 0x5D, 0x77), True
+            RGBColor(0xB, 0x5D, 0x77)
         )
 
         self.set_shape_transparency(shape, 53)
