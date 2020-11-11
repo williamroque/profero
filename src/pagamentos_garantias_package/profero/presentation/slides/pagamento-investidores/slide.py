@@ -9,6 +9,9 @@ from profero.framework.presentation.cell import Cell
 from profero.presentation.slides.common.header import HeaderRow
 from profero.presentation.slides.common.note import NoteCell
 
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR')
+
 
 NOTE = """
 ➢ Valores com base em {}
@@ -40,7 +43,7 @@ class TableCell(Cell):
         segunda_serie = str(self.inputs.get('primeira-serie') + 1)
 
         self.table = slide.shapes.add_table(
-            13, 3,
+            14, 3,
             self.x_offset + self.width / 2 - table_width / 2,
             self.parent_row.y_offset +\
                 self.parent_row.height / 2 -\
@@ -91,8 +94,8 @@ class TableCell(Cell):
         amort_unit_primeira = self.props[primeira_serie]['amortizacao-unitaria']
         amort_unit_segunda = self.props[segunda_serie]['amortizacao-unitaria']
 
-        amex_unit_primeira = self.props[primeira_serie]['amortizacao-unitaria'],
-        amex_unit_segunda = self.props[segunda_serie]['amortizacao-unitaria'],
+        amex_unit_primeira = self.props[primeira_serie]['amex-unitaria']
+        amex_unit_segunda = self.props[segunda_serie]['amex-unitaria']
 
         pmt_unitario_primeira = self.props[primeira_serie]['pagamento-total-unidade']
         pmt_unitario_segunda = self.props[segunda_serie]['pagamento-total-unidade']
@@ -100,64 +103,163 @@ class TableCell(Cell):
         self.add_table_row(
             'Quantidade de CRI integralizado',
             [
-                quantidade_primeira,
-                quantidade_segunda,
+                '{:n}'.format(quantidade_primeira),
+                '{:n}'.format(quantidade_segunda),
             ],
             [False],
         )
         self.add_table_row(
             'Juros Unitários',
             [
-                self.props[primeira_serie]['juros-unitarios'],
-                self.props[segunda_serie]['juros-unitarios'],
+                locale.format_string(
+                    'R$ %.8f',
+                    self.props[primeira_serie]['juros-unitarios'],
+                    True
+                ),
+                locale.format_string(
+                    'R$ %.8f',
+                    self.props[segunda_serie]['juros-unitarios'],
+                    True
+                ),
             ],
             [False],
         )
         self.add_table_row(
             'Amortização Unitária',
             [
-                amort_unit_primeira,
-                amort_unit_segunda,
+                locale.format_string(
+                    'R$ %.8f',
+                    amort_unit_primeira,
+                    True
+                ) if amort_unit_primeira > 0 else '-',
+                locale.format_string(
+                    'R$ %.8f',
+                    amort_unit_segunda,
+                    True
+                ) if amort_unit_segunda > 0 else '-',
             ],
             [False],
         )
         self.add_table_row(
             'Amortização Extraordinária Unitária',
             [
-                amex_unit_primeira,
-                amex_unit_segunda,
+                locale.format_string(
+                    'R$ %.8f',
+                    amex_unit_primeira,
+                    True
+                ) if amex_unit_primeira > 0 else '-',
+                locale.format_string(
+                    'R$ %.8f',
+                    amex_unit_segunda,
+                    True
+                ) if amex_unit_segunda > 0 else '-',
             ],
             [False],
         )
         self.add_table_row(
             'Pagamento Total por Unidade',
             [
-                pmt_unitario_primeira,
-                pmt_unitario_segunda,
+                locale.format_string(
+                    'R$ %.8f',
+                    pmt_unitario_primeira,
+                    True
+                ),
+                locale.format_string(
+                    'R$ %.8f',
+                    pmt_unitario_segunda,
+                    True
+                ),
             ],
             [False],
         )
         self.add_table_row(
             'Pagamento Total do CRI em Circulação',
             [
-                pmt_unitario_primeira * quantidade_primeira,
-                pmt_unitario_segunda * quantidade_segunda,
+                locale.format_string(
+                    'R$ %.2f',
+                    pmt_unitario_primeira * quantidade_primeira,
+                    True
+                ),
+                locale.format_string(
+                    'R$ %.2f',
+                    pmt_unitario_segunda * quantidade_segunda,
+                    True
+                ),
+            ],
+            [False],
+        )
+        self.add_table_row(
+            'Saldo Devedor Unitário',
+            [
+                locale.format_string(
+                    'R$ %.2f',
+                    self.inputs.get('saldo-primeira') / quantidade_primeira,
+                    True
+                ),
+                locale.format_string(
+                    'R$ %.2f',
+                    self.inputs.get('saldo-segunda') / quantidade_segunda,
+                    True
+                ),
             ],
             [False],
         )
         self.add_table_row(
             'Saldo Devedor Total',
             [
-                self.inputs.get('saldo-primeira'),
-                self.inputs.get('saldo-segunda'),
-                self.inputs.get('saldo-cri'),
+                locale.format_string(
+                    'R$ %.2f',
+                    self.inputs.get('saldo-primeira'),
+                    True
+                ),
+                locale.format_string(
+                    'R$ %.2f',
+                    self.inputs.get('saldo-segunda'),
+                    True
+                ),
+                locale.format_string(
+                    'R$ %.2f',
+                    self.inputs.get('saldo-cri'),
+                    True
+                ),
                 None,
             ],
             [False, True],
         )
+        self.add_table_row(
+            'Pagamento aos Investidores',
+            [
+                locale.format_string(
+                    'R$ %.2f',
+                    self.props[primeira_serie]['pagamento-investidores'],
+                    True
+                ),
+                locale.format_string(
+                    'R$ %.2f',
+                    self.props[segunda_serie]['pagamento-investidores'],
+                    True
+                ),
+            ],
+            [False]
+        )
+
+        investidores = zip(
+            self.props[primeira_serie]['investidores'],
+            self.props[segunda_serie]['investidores'],
+        )
+        for investidor_i, investidor in enumerate(investidores):
+            self.add_table_row(
+                'Investidor {:02}'.format(investidor_i + 1),
+                [*map(
+                    lambda n: locale.format_string('R$ %.2f', n, True) if n > 0 else '-',
+                    investidor
+                )],
+                [False]
+            )
 
     def add_table_row(self, header, values, merge_row_cells):
         header_cell = self.table.cell(self.row_count + 1, 0)
+        header_cell.vertical_anchor = MSO_ANCHOR.MIDDLE
 
         self.set_text(
             header_cell,
@@ -165,7 +267,7 @@ class TableCell(Cell):
             alignment=PP_ALIGN.LEFT,
             font_family='Calibri',
             font_size=Pt(9),
-            color=RGBColor(0, 0, 0)
+            color=RGBColor(0, 0, 0),
         )
 
         for i in range(len(values) // 2 - 1):
@@ -178,6 +280,7 @@ class TableCell(Cell):
             self.row_count += 1
 
             value_1_cell = self.table.cell(self.row_count, 1)
+            value_1_cell.vertical_anchor = MSO_ANCHOR.MIDDLE
             self.set_text(
                 value_1_cell,
                 str(value_1),
@@ -188,6 +291,7 @@ class TableCell(Cell):
             )
 
             value_2_cell = self.table.cell(self.row_count, 2)
+            value_2_cell.vertical_anchor = MSO_ANCHOR.MIDDLE
             if value_2 != None:
                 self.set_text(
                     value_2_cell,
