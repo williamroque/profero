@@ -54,7 +54,7 @@ class Cell():
         run.text = text
 
         if slide_link != None:
-            line_height = font_size + Pt(3) # constant required for lack of proper API call
+            line_height = font_size + Pt(2.5) # constant required for lack of proper API call
             link_rect = self.create_rect(
                 shape.left,
                 shape.top + run.text.count('\n') * line_height + margin_top,

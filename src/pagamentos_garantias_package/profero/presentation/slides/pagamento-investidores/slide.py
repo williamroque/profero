@@ -257,6 +257,11 @@ class TableCell(Cell):
                 [False]
             )
 
+        slide = self.parent_row.parent_slide
+        slide.table_of_contents_slide.add_entry(
+            slide.title, [slide.index + 1], slide
+        )
+
     def add_table_row(self, header, values, merge_row_cells):
         header_cell = self.table.cell(self.row_count + 1, 0)
         header_cell.vertical_anchor = MSO_ANCHOR.MIDDLE

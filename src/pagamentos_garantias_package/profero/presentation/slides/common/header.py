@@ -93,7 +93,7 @@ class HeaderCell(Cell):
             'Helvetica', Pt(10)
         )
 
-        title_width = Cm(11)
+        title_width = Cm(11.91)
         title_height = Cm(1.11)
         title = self.create_rect(
             self.slide_width / 2 - title_width / 2,

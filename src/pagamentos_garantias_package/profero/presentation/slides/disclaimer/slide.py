@@ -48,9 +48,9 @@ class DisclaimerCell(Cell):
         self.set_text(
             disclaimer,
             disclaimer_string,
-            font_family='Helvetica',
+            font_family='Calibri',
             font_size=Pt(14),
-            color=RGBColor(0x20, 0x38, 0x64),
+            color=RGBColor(0x16, 0x29, 0x4C),
             alignment=PP_ALIGN.JUSTIFY,
             vertical_anchor=MSO_ANCHOR.TOP
         )

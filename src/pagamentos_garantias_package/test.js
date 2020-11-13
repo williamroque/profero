@@ -93,6 +93,18 @@ const input = {
                 }
             }
         },
+        {
+            id: 'ativos-imobiliarios',
+            inputs: {}
+        },
+        {
+            id: 'caracteristicas-ativos',
+            inputs: {}
+        },
+        {
+            id: 'direitos-creditorios-garantia',
+            inputs: {}
+        }
     ]
 };
 

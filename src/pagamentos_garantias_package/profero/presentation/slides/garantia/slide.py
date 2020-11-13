@@ -35,7 +35,7 @@ class ChartCell(Cell):
                 'width': slide_width,
                 'x_offset': 0
             },
-            'table', 0,
+            'chart', 0,
             parent_row
         )
 
@@ -209,7 +209,7 @@ class ChartCell(Cell):
         )
 
         slide.table_of_contents_slide.add_entry(
-            slide.title, [slide.index + 1], self.parent_row.parent_slide
+            slide.title, [slide.index + 1], slide
         )
 
 
