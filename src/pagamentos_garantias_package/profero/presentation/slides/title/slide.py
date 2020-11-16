@@ -49,7 +49,7 @@ class ClientLogoCell(Cell):
 
 
 class TitleCell(Cell):
-    def __init__(self, inputs, slide_width, parent_row):
+    def __init__(self, inputs, slide_width, props, parent_row):
         super().__init__(
             inputs,
             {
@@ -59,6 +59,8 @@ class TitleCell(Cell):
             'title', 1,
             parent_row
         )
+
+        self.props = props
 
     def render(self, slide):
         shape = self.create_rect(
@@ -77,7 +79,7 @@ class TitleCell(Cell):
                 primeira_serie + 1,
                 time.strftime(
                     '%B de %Y',
-                    time.strptime(self.inputs.get('date'), '%d/%m/%Y')
+                    time.strptime(self.props['date'], '%d/%m/%Y')
                 )
             ),
             margin_left=Cm(1)
@@ -154,7 +156,7 @@ class Slide(FSlide):
             self
         )
 
-        title_cell = TitleCell(inputs, slide_width, title_row)
+        title_cell = TitleCell(inputs, slide_width, props, title_row)
         title_row.add_cell(title_cell)
 
         self.add_row(title_row)

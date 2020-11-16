@@ -6,26 +6,32 @@ const MM = 1_000_000;
 
 const input = {
     'primeira-serie': 16,
-    'date': '07/09/2020',
     'output-path': '/Users/jetblack-work/Desktop/slideshow.pptx',
     'project-logo': '/Users/jetblack-work/Desktop/project_logo.png',
     'client-logo': '/Users/jetblack-work/Desktop/client_logo.png',
     slides: [
         {
             id: 'title',
-            inputs: {}
+            inputs: {
+                'date': '07/09/2020',
+            }
         },
         {
             id: 'disclaimer',
-            inputs: {}
+            inputs: {
+                'date': '07/09/2020',
+            }
         },
         {
             id: 'table-of-contents',
-            inputs: {}
+            inputs: {
+                'date': '07/09/2020',
+            }
         },
         {
             id: 'dados-operacao',
             inputs: {
+                'date': '07/09/2020',
                 '16': {
                     'instrumento-financeiro': '18C0722274',
                     'isin': 'BRLGOSCRI0D1',
@@ -53,6 +59,7 @@ const input = {
         {
             id: 'garantia',
             inputs: {
+                'date': '07/09/2020',
                 'fundo-reserva': .9 * MM,
                 'estoque': 34980928.786,
                 'direitos-creditorios-inadimplidos':  17357683.41,
@@ -64,6 +71,7 @@ const input = {
         {
             id: 'pagamento-investidores',
             inputs: {
+                'date': '07/09/2020',
                 'numero-evento': 30,
                 '16': {
                     'quantidade': 2590,
@@ -95,15 +103,57 @@ const input = {
         },
         {
             id: 'ativos-imobiliarios',
-            inputs: {}
+            inputs: {
+                'date': '07/09/2020',
+            }
         },
         {
             id: 'caracteristicas-ativos',
-            inputs: {}
+            inputs: {
+                'date': '07/09/2020',
+            }
         },
         {
             id: 'direitos-creditorios-garantia',
-            inputs: {}
+            inputs: {
+                'date': '07/09/2020',
+                'empreendimentos': [
+                    'Araçari',
+                    'Tangará',
+                    'Aranguá',
+                    'Araguari',
+                ],
+                'contratos': [
+                    107,
+                    127,
+                    170,
+                    77,
+                ],
+                'num-direitos-adimplidos': [
+                    81,
+                    90,
+                    116,
+                    68,
+                ],
+                'num-direitos-inadimplidos': [
+                    26,
+                    37,
+                    54,
+                    9,
+                ],
+                'direitos-adimplidos': [
+                    6.86,
+                    7.58,
+                    11.59,
+                    6.58,
+                ],
+                'direitos-inadimplidos': [
+                    3.35,
+                    4.96,
+                    8.09,
+                    0.96,
+                ]
+            }
         }
     ]
 };

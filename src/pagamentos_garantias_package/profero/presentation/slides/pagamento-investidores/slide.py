@@ -373,7 +373,7 @@ class Slide(FSlide):
             inputs,
             slide_width,
             NOTE.format(
-                inputs.get('date')
+                props['date']
             ),
             note_row
         )

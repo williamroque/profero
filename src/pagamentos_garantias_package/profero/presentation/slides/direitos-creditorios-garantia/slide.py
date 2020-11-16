@@ -30,11 +30,94 @@ class TableCell(Cell):
         self.slide_width = slide_width
         self.props = props
 
+        self.row_count = 0
+
     def render(self, slide):
+        table_width = Cm(32.55)
+        table_height = Cm(4.11)
+        y_correction = Cm(-1)
+
+        headers = [
+            'Empreendimentos',
+            '# Contratos',
+            '# Direitos Creditórios Adimplidos',
+            '# Direitos Creditórios Inadimplidos',
+            'Direitos Creditórios Inadimplidos (R$ MM)',
+            '# Direitos Creditórios Inadimplidos (R$ MM)',
+            'Total dos Direitos Creditórios (R$ MM)',
+        ]
+
+        self.table = slide.shapes.add_table(
+            len(self.props['empreendimentos']) + 2,
+            len(headers),
+            self.x_offset + self.width / 2 - table_width / 2,
+            self.parent_row.y_offset +\
+                self.parent_row.height / 2 -\
+                table_height / 2 +\
+                y_correction,
+            int(table_width), int(table_height)
+        ).table
+
+        self.add_table_row(
+            headers,
+            bold=True,
+            color=RGBColor(255, 255, 255),
+            fill_color=RGBColor(0x16, 0x36, 0x5C)
+        )
+
+        self.table.rows[0].height = Cm(2)
+
+        for empreendimento_i, empreendimento in enumerate(self.props['empreendimentos']):
+            direitos_adimplidos = self.props['direitos-adimplidos'][empreendimento_i]
+            direitos_inadimplidos = self.props['direitos-inadimplidos'][empreendimento_i]
+
+            self.add_table_row([
+                empreendimento,
+                self.props['contratos'][empreendimento_i],
+                self.props['num-direitos-adimplidos'][empreendimento_i],
+                self.props['num-direitos-inadimplidos'][empreendimento_i],
+                direitos_adimplidos,
+                direitos_inadimplidos,
+                direitos_adimplidos + direitos_inadimplidos
+            ])
+
+        self.add_table_row(
+            [
+                'Total',
+                sum(self.props['contratos']),
+                sum(self.props['num-direitos-adimplidos']),
+                sum(self.props['num-direitos-inadimplidos']),
+                sum(self.props['direitos-adimplidos']),
+                sum(self.props['direitos-inadimplidos']),
+                sum(self.props['direitos-adimplidos']) + sum(self.props['direitos-inadimplidos']),
+            ],
+            bold=True
+        )
+
         slide = self.parent_row.parent_slide
         slide.table_of_contents_slide.add_entry(
             slide.title, [slide.index + 1], slide
         )
+
+    def add_table_row(self, values, bold=False, color=RGBColor(0x0F, 0x3B, 0x5E), fill_color=None):
+        for value_i, value in enumerate(values):
+            cell = self.table.cell(self.row_count, value_i)
+            cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+
+            self.set_text(
+                cell,
+                str(value),
+                alignment=PP_ALIGN.CENTER,
+                font_family='Calibri',
+                font_size=Pt(12),
+                color=color,
+                bold=bold
+            )
+
+            if fill_color != None:
+                self.set_fill_color(cell, fill_color)
+
+        self.row_count += 1
 
 
 class ChartCell(Cell):
@@ -133,7 +216,7 @@ class Slide(FSlide):
             inputs,
             slide_width,
             NOTE.format(
-                inputs.get('date')
+                props['date']
             ),
             note_row
         )

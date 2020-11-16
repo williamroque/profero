@@ -274,7 +274,7 @@ class Slide(FSlide):
         note_cell = NoteCell(
             inputs,
             slide_width,
-            NOTE.format(inputs.get('date')),
+            NOTE.format(props['date']),
             note_row
         )
         note_row.add_cell(note_cell)

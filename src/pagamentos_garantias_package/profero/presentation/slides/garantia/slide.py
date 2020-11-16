@@ -275,7 +275,7 @@ class Slide(FSlide):
             inputs,
             slide_width,
             NOTE.format(
-                inputs.get('date'),
+                props['date'],
                 props['garantia-minima'] / inputs.get('saldo-cri')
             ),
             note_row
