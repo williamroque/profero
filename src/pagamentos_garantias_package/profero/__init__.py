@@ -1,27 +1,18 @@
-import time
-import locale
-
-import os
-import json
-
-import numpy as np
-
 from profero.util.input import Input
 from profero.presentation.slideshow import Slideshow
-
-
-locale.setlocale(locale.LC_TIME, 'pt_BR')
 
 
 def main():
     print('Processing inputs.', flush=True)
 
+    # Processar stdin
     inputs = Input()
 
     print('Inputs processed.\n', flush=True)
 
     print('Rendering presentation.', flush=True)
 
+    # Construir e renderizar apresentação
     slideshow = Slideshow(inputs)
     slideshow.render()
 

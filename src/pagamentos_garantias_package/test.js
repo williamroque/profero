@@ -1,9 +1,11 @@
 const { spawn } = require('child_process');
 
+// A ideia aqui é simular o modo de executar do GENSEC
 const subprocess = spawn('python', ['main.py']);
 
 const MM = 1_000_000;
 
+// O formato deste objeto deve refletir o gerado automaticamente pelo GENSEC
 const input = {
     'primeira-serie': 16,
     'output-path': '/Users/jetblack-work/Desktop/slideshow.pptx',
@@ -158,14 +160,17 @@ const input = {
     ]
 };
 
+// Escrever o objeto de dados ao stdin do programa
 subprocess.stdin.write(JSON.stringify(input));
 subprocess.stdin.end();
 
+// Escrever erros do programa ao stderr (para poder bifurcar a saída)
 subprocess.stderr.on('data', err => {
     process.stderr.write(err.toString());
     process.exit(1)
 });
 
+// Escrever stdout do programa ao stdout
 subprocess.stdout.on('data', out => {
     console.log(out.toString());
 });
