@@ -9,9 +9,16 @@ from profero.framework.presentation.cell import Cell
 from profero.presentation.slides.common.header import HeaderRow
 from profero.presentation.slides.common.note import NoteCell
 
+import matplotlib.pyplot as plt
+
+import io
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR')
+
 
 NOTE = """
 ➢ Valores com base em {}
+➢ Direitos Creditórios Inadimplidos são os recebíveis cujas prestações não tenham sido pagas a partir do 91º dia a contar do respectivo vencimento
 """.strip()
 
 
@@ -62,10 +69,11 @@ class TableCell(Cell):
             headers,
             bold=True,
             color=RGBColor(255, 255, 255),
-            fill_color=RGBColor(0x16, 0x36, 0x5C)
+            fill_color=RGBColor(0x16, 0x36, 0x5C),
+            font_size=Pt(11)
         )
 
-        self.table.rows[0].height = Cm(2)
+        self.table.rows[0].height = Cm(1.6)
 
         for empreendimento_i, empreendimento in enumerate(self.props['empreendimentos']):
             direitos_adimplidos = self.props['direitos-adimplidos'][empreendimento_i]
@@ -73,23 +81,33 @@ class TableCell(Cell):
 
             self.add_table_row([
                 empreendimento,
-                self.props['contratos'][empreendimento_i],
-                self.props['num-direitos-adimplidos'][empreendimento_i],
-                self.props['num-direitos-inadimplidos'][empreendimento_i],
-                direitos_adimplidos,
-                direitos_inadimplidos,
-                direitos_adimplidos + direitos_inadimplidos
+                *map(
+                    lambda n: locale.format_string('%.2f', float(n), True),
+                    [
+                        self.props['contratos'][empreendimento_i],
+                        self.props['num-direitos-adimplidos'][empreendimento_i],
+                        self.props['num-direitos-inadimplidos'][empreendimento_i],
+                        direitos_adimplidos,
+                        direitos_inadimplidos,
+                        direitos_adimplidos + direitos_inadimplidos
+                    ]
+                )
             ])
 
         self.add_table_row(
             [
                 'Total',
-                sum(self.props['contratos']),
-                sum(self.props['num-direitos-adimplidos']),
-                sum(self.props['num-direitos-inadimplidos']),
-                sum(self.props['direitos-adimplidos']),
-                sum(self.props['direitos-inadimplidos']),
-                sum(self.props['direitos-adimplidos']) + sum(self.props['direitos-inadimplidos']),
+                *map(
+                    lambda n: locale.format_string('%.2f', float(n), True),
+                    [
+                        sum(self.props['contratos']),
+                        sum(self.props['num-direitos-adimplidos']),
+                        sum(self.props['num-direitos-inadimplidos']),
+                        sum(self.props['direitos-adimplidos']),
+                        sum(self.props['direitos-inadimplidos']),
+                        sum(self.props['direitos-adimplidos']) + sum(self.props['direitos-inadimplidos']),
+                    ]
+                )
             ],
             bold=True
         )
@@ -99,7 +117,7 @@ class TableCell(Cell):
             slide.title, [slide.index + 1], slide
         )
 
-    def add_table_row(self, values, bold=False, color=RGBColor(0x0F, 0x3B, 0x5E), fill_color=None):
+    def add_table_row(self, values, bold=False, color=RGBColor(0x0F, 0x3B, 0x5E), fill_color=None, font_size=Pt(12)):
         for value_i, value in enumerate(values):
             cell = self.table.cell(self.row_count, value_i)
             cell.vertical_anchor = MSO_ANCHOR.MIDDLE
@@ -109,7 +127,7 @@ class TableCell(Cell):
                 str(value),
                 alignment=PP_ALIGN.CENTER,
                 font_family='Calibri',
-                font_size=Pt(12),
+                font_size=font_size,
                 color=color,
                 bold=bold
             )
@@ -136,7 +154,63 @@ class ChartCell(Cell):
         self.props = props
 
     def render(self, slide):
-        pass
+        values = (
+            sum(self.props['direitos-adimplidos']),
+            sum(self.props['direitos-inadimplidos']),
+        )
+
+        labels = (
+            'Direitos Creditórios Adimplidos',
+            'Direitos Creditórios Inadimplidos',
+        )
+
+        chart_width = 7.63
+        chart_height = self.parent_row.height / Inches(1)
+
+        plot_size = 1
+        plot_x = 1/2 - plot_size/2 + .2
+
+        fig = plt.figure(figsize=(chart_width, chart_height))
+        ax = fig.add_axes([plot_x, -.05, plot_size, plot_size])
+
+        def func(pct, allvals):
+            absolute = (pct / 100) * sum(allvals)
+            return 'R$ {:.2f} MM\n{:d}%'.format(absolute, int(pct))
+
+        wedges, texts, autotexts = ax.pie(
+            values,
+            textprops=dict(color='w'),
+            colors=['#333F50', '#8497B0', '#ADB9CA'],
+            rotatelabels=True,
+            autopct=lambda pct: func(pct, values),
+            explode=[0, .15],
+            startangle=90,
+            counterclock=False
+        )
+
+        ax.legend(
+            wedges,
+            labels,
+            bbox_to_anchor=(-.3, .5),
+            frameon=False
+        )
+
+        plt.setp(autotexts, size=8, weight='bold')
+
+        image_stream = io.BytesIO()
+        fig.savefig(image_stream, format='png')
+
+        chart_width = Inches(chart_width)
+        chart_height = Inches(chart_height)
+
+        slide.shapes.add_picture(
+            image_stream,
+            self.slide_width / 2 - chart_width / 2,
+            self.parent_row.y_offset + self.parent_row.height / 2 - chart_height / 2,
+            chart_width,
+            chart_height
+        )
+
 
 
 class Slide(FSlide):
@@ -175,7 +249,7 @@ class Slide(FSlide):
         table_row = Row(
             inputs,
             {
-                'height': .3 * slide_height - note_height / 2,
+                'height': .35 * slide_height - note_height / 2,
                 'y_offset': header_row.y_offset + header_row.height
             },
             'table', 1,
@@ -190,7 +264,7 @@ class Slide(FSlide):
         chart_row = Row(
             inputs,
             {
-                'height': .45 * slide_height - note_height / 2,
+                'height': .4 * slide_height - note_height / 2,
                 'y_offset': table_row.y_offset + table_row.height
             },
             'chart', 2,
