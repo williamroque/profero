@@ -49,7 +49,7 @@ class Slide(FSlide):
             parent_presentation
         )
 
-        self.title = 'Pagamentos x Curva'
+        self.title = 'Pagamentos _x_ Curva'
 
         self.props = props
 

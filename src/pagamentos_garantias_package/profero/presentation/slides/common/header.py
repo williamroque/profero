@@ -8,6 +8,8 @@ from profero.framework.presentation.row import Row
 import importlib.resources
 import profero.assets
 
+import re
+
 
 class ClientLogoCell(Cell):
     def __init__(self, inputs, client_logo_path, slide_width, parent_row):
@@ -58,7 +60,7 @@ class HeaderCell(Cell):
         )
 
         rect_height = Cm(.7)
-        slide_number_width = Cm(.8)
+        slide_number_width = Cm(1.1)
         confidencial_width = Cm(4)
 
         spacing = Cm(.4)
@@ -68,7 +70,7 @@ class HeaderCell(Cell):
         slide_number = self.create_rect(
             self.slide_width / 2 - total_rect_width / 2,
             self.parent_row.y_offset + self.parent_row.height / 2 - rect_height - vertical_margin,
-            rect_height, rect_height,
+            slide_number_width, rect_height,
             RGBColor(0x0A, 0x56, 0x79)
         )
 
@@ -80,7 +82,7 @@ class HeaderCell(Cell):
         )
 
         confidencial = self.create_rect(
-            self.slide_width / 2 - total_rect_width / 2 + rect_height + spacing,
+            self.slide_width / 2 - total_rect_width / 2 + slide_number_width + spacing,
             self.parent_row.y_offset + self.parent_row.height / 2 - rect_height - vertical_margin,
             confidencial_width, rect_height,
             RGBColor(0x0A, 0x56, 0x79)
@@ -105,7 +107,7 @@ class HeaderCell(Cell):
 
         self.set_text(
             title,
-            self.title.upper(),
+            re.sub(r'_(\w+)_', lambda m: m.group(1).lower(), self.title.upper()),
             PP_ALIGN.CENTER,
             'Helvetica', Pt(16),
             True, None,
