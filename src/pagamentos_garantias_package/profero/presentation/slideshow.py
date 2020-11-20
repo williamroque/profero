@@ -15,13 +15,17 @@ class Slideshow(Presentation):
             }
         )
 
+        # Usar primeiro slide com o ID 'table-of-contents' (temas a serem abordados) como
+        # o índice
         table_of_contents_slide = None
 
         for slide_i, slide in enumerate(inputs.get('slides')):
+            # Importar módulo com o nome especificado pelo `manifest.json`
             module = importlib.import_module(
                 'profero.presentation.slides.{}.slide'.format(slide['id'])
             )
 
+            # Construir classe `Slide` do módulo
             module_slide = module.Slide(
                 inputs,
                 slide_i,

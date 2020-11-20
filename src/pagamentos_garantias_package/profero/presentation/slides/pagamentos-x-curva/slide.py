@@ -9,6 +9,8 @@ from profero.framework.presentation.cell import Cell
 from profero.presentation.slides.common.header import HeaderRow
 from profero.presentation.slides.common.note import NoteCell
 
+import io
+
 
 NOTE = """
 ➢ Curva: pagamentos previstos na curva de amortização original dos CRI
@@ -33,6 +35,82 @@ class ChartCell(Cell):
         self.props = props
 
     def render(self, slide):
+        primeira_serie = str(self.inputs.get('primeira-serie'))
+        segunda_serie = str(self.inputs.get('primeira-serie') + 1)
+
+        atual_inputs = zip(
+            self.props[primeira_serie][i],
+            self.props[segunda_serie][i]
+        )
+
+        curva = [], pagamento = [], recebimento = []
+        juros_sen = [], amort_sen = [], amex_sen = []
+        juros_sub = [], amort_sub = [], amex_sub = []
+        for sen, sub in atual_inputs:
+            curva.append(
+                sen[1] + sen[2] +\
+                sub[1] + sub[2]
+            )
+            pagamento.append(
+                sen[1] + sen[2] + sen[3] +\
+                sub[1] + sub[2] + sub[3]
+            )
+
+            juros_sen.append(sen[1])
+            juros_sub.append(sub[1])
+
+            amort_sen.append(sen[2])
+            amort_sub.append(sub[2])
+
+            amex_sen.append(sen[3])
+            amex_sub.append(sub[3])
+
+        values = [
+            curva,
+            juros_sen,
+            amort_sen,
+            amex_sen,
+            juros_sub,
+            amort_sub,
+            amex_sub,
+            pagamento,
+            recebimento
+        ]
+        labels = [
+            'Curva',
+            'Juros Seniores',
+            'Amortização Seniores',
+            'AMEX Seniores',
+            'Juros Subordinada',
+            'Amortização Subordinada',
+            'AMEX Subordinada',
+            'Pagamento',
+            'Recebimento'
+        ]
+
+        chart_width = 11.24
+        chart_height = 4.52
+
+        plot_width = .4
+        plot_x = 1/2 - plot_width/2 + .1
+
+        fig = plt.figure(figsize=(chart_width, chart_height))
+        ax = fig.add_axes([plot_x, .05, plot_width, .9])
+
+        chart_width = Inches(chart_width)
+        chart_height = Inches(chart_height)
+
+        image_stream = io.BytesIO()
+        fig.savefig(image_stream, format='png')
+
+        slide.slide.shapes.add_picture(
+            image_stream,
+            self.slide_width / 2 - chart_width / 2,
+            self.parent_row.y_offset + self.parent_row.height / 2 - chart_height / 2,
+            chart_width,
+            chart_height
+        )
+
         slide = self.parent_row.parent_slide
         slide.table_of_contents_slide.add_entry(
             slide.title, [slide.index + 1], slide
