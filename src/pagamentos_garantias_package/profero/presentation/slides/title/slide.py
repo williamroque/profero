@@ -1,3 +1,5 @@
+# Esse slide representa o título da apresentação
+
 from pptx.util import Cm, Pt
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.dml.color import RGBColor

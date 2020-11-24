@@ -9,7 +9,12 @@ from profero.framework.presentation.cell import Cell
 from profero.presentation.slides.common.header import HeaderRow
 from profero.presentation.slides.common.note import NoteCell
 
+import matplotlib.pyplot as plt
+
 import io
+
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR')
 
 
 NOTE = """
@@ -39,13 +44,19 @@ class ChartCell(Cell):
         segunda_serie = str(self.inputs.get('primeira-serie') + 1)
 
         atual_inputs = zip(
-            self.props[primeira_serie][i],
-            self.props[segunda_serie][i]
+            self.props[primeira_serie],
+            self.props[segunda_serie]
         )
 
-        curva = [], pagamento = [], recebimento = []
-        juros_sen = [], amort_sen = [], amex_sen = []
-        juros_sub = [], amort_sub = [], amex_sub = []
+        curva = []
+        pagamento = []
+        juros_sen = []
+        amort_sen = []
+        amex_sen = []
+        juros_sub = []
+        amort_sub = []
+        amex_sub = []
+
         for sen, sub in atual_inputs:
             curva.append(
                 sen[1] + sen[2] +\
@@ -65,28 +76,33 @@ class ChartCell(Cell):
             amex_sen.append(sen[3])
             amex_sub.append(sub[3])
 
-        values = [
+        values = list(zip(
             curva,
-            juros_sen,
             amort_sen,
+            juros_sen,
             amex_sen,
-            juros_sub,
             amort_sub,
+            juros_sub,
             amex_sub,
             pagamento,
-            recebimento
-        ]
+            self.props['recebimento']
+        ))
         labels = [
             'Curva',
-            'Juros Seniores',
             'Amortização Seniores',
+            'Juros Seniores',
             'AMEX Seniores',
-            'Juros Subordinada',
             'Amortização Subordinada',
+            'Juros Subordinada',
             'AMEX Subordinada',
             'Pagamento',
             'Recebimento'
         ]
+
+        for i, month in enumerate(values):
+            print('\n---', self.props['16'][i][0], '---')
+            for vi in range(len(month)):
+                print(labels[vi], '→', locale.format_string('R$ %.0f', month[vi], True))
 
         chart_width = 11.24
         chart_height = 4.52
@@ -103,7 +119,7 @@ class ChartCell(Cell):
         image_stream = io.BytesIO()
         fig.savefig(image_stream, format='png')
 
-        slide.slide.shapes.add_picture(
+        slide.shapes.add_picture(
             image_stream,
             self.slide_width / 2 - chart_width / 2,
             self.parent_row.y_offset + self.parent_row.height / 2 - chart_height / 2,

@@ -1,3 +1,5 @@
+# Esse slide contém o disclaimer
+
 from pptx.util import Cm, Pt
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
@@ -22,6 +24,7 @@ Ao preparar esta apresentação, a LogosSec não realizou nenhuma verificação 
 """.strip()
 
 
+# Essa célula contém o texto do disclaimer
 class DisclaimerCell(Cell):
     def __init__(self, inputs, slide_width, parent_row):
         super().__init__(
@@ -35,9 +38,11 @@ class DisclaimerCell(Cell):
         )
 
     def render(self, slide):
+        # As dimensões da caixa de texto
         box_width = self.width * .87
         box_height = self.parent_row.height * .9
 
+        # A caixa de texto em si
         disclaimer = self.create_rect(
             self.x_offset + self.width / 2 - box_width / 2,
             self.parent_row.y_offset + self.parent_row.height / 2 - box_height / 2,

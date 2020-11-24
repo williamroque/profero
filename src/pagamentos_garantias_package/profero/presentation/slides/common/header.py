@@ -37,6 +37,7 @@ class ClientLogoCell(Cell):
         )
 
 
+# Célula principal
 class HeaderCell(Cell):
     def __init__(self, inputs, slide_width, x_offset, title, parent_row):
         super().__init__(
@@ -53,20 +54,32 @@ class HeaderCell(Cell):
         self.slide_width = slide_width
 
     def render(self, slide):
+        # Linha horizontal do cabeçalho
         line = self.create_rect(
             self.x_offset, self.parent_row.y_offset + self.parent_row.height / 2,
             self.width, Pt(2),
             RGBColor(0x00, 0x6B, 0xA2)
         )
 
+        # Altura dos elementos centrais
         rect_height = Cm(.7)
+
+        # Largura do retângulo do número de slide
         slide_number_width = Cm(1.1)
+
+        # Largura do retângulo do aviso 'CONFIDENCIAL'
         confidencial_width = Cm(4)
 
+        # Espaço entre o número e o aviso
         spacing = Cm(.4)
+
+        # Espaço horizontal total ocupado pelos elementos + o espaço entre eles
         total_rect_width = slide_number_width + spacing + confidencial_width
 
+        # Espaço vertical entre os elementos e a linha
         vertical_margin = Cm(.5)
+
+        # Retângulo do número de slide
         slide_number = self.create_rect(
             self.slide_width / 2 - total_rect_width / 2,
             self.parent_row.y_offset + self.parent_row.height / 2 - rect_height - vertical_margin,
@@ -81,6 +94,7 @@ class HeaderCell(Cell):
             'Helvetica', Pt(10)
         )
 
+        # Retângulo do aviso
         confidencial = self.create_rect(
             self.slide_width / 2 - total_rect_width / 2 + slide_number_width + spacing,
             self.parent_row.y_offset + self.parent_row.height / 2 - rect_height - vertical_margin,
@@ -95,8 +109,11 @@ class HeaderCell(Cell):
             'Helvetica', Pt(10)
         )
 
+        # Dimensões da caixa de texto do título
         title_width = Cm(11.91)
         title_height = Cm(1.11)
+
+        # Caixa de texto do título
         title = self.create_rect(
             self.slide_width / 2 - title_width / 2,
             self.parent_row.y_offset + self.parent_row.height / 2 + vertical_margin,
@@ -141,6 +158,7 @@ class LogoCell(Cell):
         )
 
 
+# Essa classe representa o cabeçalho do slide
 class HeaderRow(Row):
     def __init__(self, inputs, props, index, title, slide_width, slide_height, parent_slide):
         super().__init__(
