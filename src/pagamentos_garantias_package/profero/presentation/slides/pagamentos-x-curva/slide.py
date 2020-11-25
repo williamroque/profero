@@ -10,6 +10,7 @@ from profero.presentation.slides.common.header import HeaderRow
 from profero.presentation.slides.common.note import NoteCell
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 import io
 
@@ -48,6 +49,7 @@ class ChartCell(Cell):
             self.props[segunda_serie]
         )
 
+        months = []
         curva = []
         pagamento = []
         juros_sen = []
@@ -58,6 +60,8 @@ class ChartCell(Cell):
         amex_sub = []
 
         for sen, sub in atual_inputs:
+            months.append(sen[0])
+
             curva.append(
                 sen[1] + sen[2] +\
                 sub[1] + sub[2]
@@ -76,17 +80,6 @@ class ChartCell(Cell):
             amex_sen.append(sen[3])
             amex_sub.append(sub[3])
 
-        values = list(zip(
-            curva,
-            amort_sen,
-            juros_sen,
-            amex_sen,
-            amort_sub,
-            juros_sub,
-            amex_sub,
-            pagamento,
-            self.props['recebimento']
-        ))
         labels = [
             'Curva',
             'Amortização Seniores',
@@ -98,26 +91,44 @@ class ChartCell(Cell):
             'Pagamento',
             'Recebimento'
         ]
-
-        for i, month in enumerate(values):
-            print('\n---', self.props['16'][i][0], '---')
-            for vi in range(len(month)):
-                print(labels[vi], '→', locale.format_string('R$ %.0f', month[vi], True))
+        values = np.array(list(zip(
+            curva,
+            amort_sen,
+            juros_sen,
+            amex_sen,
+            amort_sub,
+            juros_sub,
+            amex_sub,
+            pagamento,
+            self.props['recebimento']
+        ))).T
 
         chart_width = 11.24
         chart_height = 4.52
 
-        plot_width = .4
+        plot_width = .7
         plot_x = 1/2 - plot_width/2 + .1
 
+        plot_height = .5
+        plot_y = .47 # unintuitive, but positive values offset upwards (positive Cartesian coordinates)
+
         fig = plt.figure(figsize=(chart_width, chart_height))
-        ax = fig.add_axes([plot_x, .05, plot_width, .9])
+        ax = fig.add_axes([plot_x, plot_y, plot_width, plot_height])
+
+        ax.plot(values)
+        plt.xticks([])
+
+        ax.table(cellText=values,
+                  rowLabels=labels,
+                  #rowColours=,
+                  colLabels=months,
+                  loc='bottom')
+
+        image_stream = io.BytesIO()
+        fig.savefig(image_stream, format='png', dpi=300)
 
         chart_width = Inches(chart_width)
         chart_height = Inches(chart_height)
-
-        image_stream = io.BytesIO()
-        fig.savefig(image_stream, format='png')
 
         slide.shapes.add_picture(
             image_stream,
