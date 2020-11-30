@@ -24,7 +24,7 @@ class Presentation():
 
     # Ver comentário no arquivo `slide.py`
     def query(self, slide_id):
-        search_generator = (slide for slide in self.slides if slide.id == slide_id)
+        search_generator = (slide for slide in self.slides if slide.slide_id == slide_id)
         try:
             return next(search_generator)
         except StopIteration:

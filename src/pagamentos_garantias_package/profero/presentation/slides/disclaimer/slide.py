@@ -55,7 +55,7 @@ class DisclaimerCell(Cell):
             disclaimer_string,
             font_family='Calibri',
             font_size=Pt(14),
-            color=RGBColor(0x16, 0x29, 0x4C),
+            color=RGBColor(0x10, 0x20, 0x30),
             alignment=PP_ALIGN.JUSTIFY,
             vertical_anchor=MSO_ANCHOR.TOP
         )

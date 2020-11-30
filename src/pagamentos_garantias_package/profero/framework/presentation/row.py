@@ -27,7 +27,7 @@ class Row():
 
     # Procurar por uma instância `Cell`; ver comentário em `slide.py`
     def query(self, cell_id):
-        search_generator = (cell for cell in self.cells if cell.id == cell_id)
+        search_generator = (cell for cell in self.cells if cell.cell_id == cell_id)
         try:
             return next(search_generator)
         except StopIteration:

@@ -13,7 +13,7 @@ import re
 
 
 NOTE = """
-Valores com base em {}
+➢ Valores com base em {}
 """.strip()
 
 

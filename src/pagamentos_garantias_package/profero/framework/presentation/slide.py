@@ -52,7 +52,7 @@ class Slide():
     # Encontrar uma instância `Row` que tenha o id especificado
     def query(self, row_id):
         # Usar um gerador para parar no primeiro valor válido
-        search_generator = (row for row in self.rows if row.id == row_id)
+        search_generator = (row for row in self.rows if row.row_id == row_id)
         try:
             return next(search_generator)
         except StopIteration:

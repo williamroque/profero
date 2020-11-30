@@ -51,6 +51,9 @@ class EntryCell(Cell):
         # da caixa, a fonte 'Courier' e o tamanho 12 pt)
         CHARS_PER_ROW = 113
 
+        # Remover marcas de substituições (ver `header.py`)
+        title = re.sub(r'_(.+)_', r'\1', title)
+
         pages.sort()
 
         # Para dois elementos consecutivos $a$ e $b$ dentro da lista `pages` e
@@ -66,7 +69,7 @@ class EntryCell(Cell):
         page_str = re.sub(r'(\d+-)(\d+-)+', r'\1', page_str)
 
         # Começar entrada em uma nova linha e encher com caracteres '.' à esquerda do
-        # texto com os números das paginas
+        # Texto com os números das paginas
         self.text += '\n{}{}'.format(
             title,
             page_str.rjust(CHARS_PER_ROW - len(title), '.')
@@ -75,7 +78,7 @@ class EntryCell(Cell):
         self.set_text(
             self.entry_box,
             self.text,
-            font_family='Courier',
+            font_family='Input',
             font_size=Pt(12),
             color=RGBColor(0x20, 0x38, 0x64),
             alignment=PP_ALIGN.JUSTIFY,
