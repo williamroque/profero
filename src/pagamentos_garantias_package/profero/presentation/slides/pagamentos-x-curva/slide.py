@@ -27,6 +27,7 @@ NOTE = """
 ➢ Curva: pagamentos previstos na curva de amortização original dos CRI
 ➢ Pagamentos: valores efetivamente pagos a título de amortização e juros dos CRI seniores e subordinado
 ➢ Valores em reais
+➢ Valores são cumulativos na tabela e médios no gráfico para trimestres, semestres e anos
 """.strip()
 
 
@@ -44,6 +45,49 @@ class ChartCell(Cell):
 
         self.slide_width = slide_width
         self.props = props
+
+        self.merge_residue = []
+
+    def merge(self, n):
+        if n == 3:
+            self.merge_residue.append('Trimestre — ' + self.months[0][-2:])
+
+            self.months[:3] = []
+            self.months.append('Trimestre')
+        elif n == 6:
+            self.merge_residue.append('Semestre — ' + self.months[0][-2:])
+
+            self.months[:6] = []
+            self.months.append('Semestre')
+        else:
+            self.merge_residue.append('Ano — ' + self.months[0][-2:])
+
+            self.months[:12] = []
+            self.months.append('Ano')
+
+    def get_overflow(self):
+        max_months = 6
+        return max(0, len(self.months) - max_months)
+
+    def get_divisor(self, overflow):
+        units = [3, 6, 12]
+        return 1 + ((1 / min(overflow / (u - 1) for u in units if overflow / (u - 1) >= 1)) * overflow if overflow > units[0] else units[0] - 1)
+
+    def merge_all(self):
+        while (overflow := self.get_overflow()) > 0:
+            self.merge(self.get_divisor(overflow))
+
+    def get_min_index(self):
+        periods = ['Trimestre', 'Semestre', 'Ano']
+        indices = []
+
+        for string in periods:
+            try:
+                indices.append(self.months.index(string))
+            except ValueError:
+                pass
+
+        return min(indices) if len(indices) > 0 else 0
 
     def render(self, slide):
         primeira_serie = str(self.inputs.get('primeira-serie'))
@@ -96,6 +140,75 @@ class ChartCell(Cell):
 
             amex_sen.append(sen[3])
             amex_sub.append(sub[3])
+
+        current_quarter = self.months[-3:]
+        del self.months[-3:]
+
+        self.merge_all()
+        merged_index = self.get_min_index()
+        self.months = self.months[merged_index:] + self.months[:merged_index]
+
+        self.months += current_quarter
+
+        long_term_count = 0
+        for i, term in enumerate(self.months):
+            if term == 'Trimestre':
+                curva[i:i+3] = [sum(curva[i:i+3]) / 3]
+                pagamento[i:i+3] = [sum(pagamento[i:i+3]) / 3]
+                juros_sen[i:i+3] = [sum(juros_sen[i:i+3]) / 3]
+                juros_sub[i:i+3] = [sum(juros_sub[i:i+3]) / 3]
+                amort_sen[i:i+3] = [sum(amort_sen[i:i+3]) / 3]
+                amort_sub[i:i+3] = [sum(amort_sub[i:i+3]) / 3]
+                amex_sen[i:i+3] = [sum(amex_sen[i:i+3]) / 3]
+                amex_sub[i:i+3] = [sum(amex_sub[i:i+3]) / 3]
+                self.props['recebimento'][i:i+3] = [sum(self.props['recebimento'][i:i+3]) / 3]
+
+                self.months[i] = '{}º {}'.format(
+                    self.merge_residue[:long_term_count].count(
+                        self.merge_residue[long_term_count]
+                    ) + 1,
+                    self.merge_residue[long_term_count]
+                )
+
+                long_term_count += 1
+            elif term == 'Semestre':
+                curva[i:i+6] = [sum(curva[i:i+6]) / 6]
+                pagamento[i:i+6] = [sum(pagamento[i:i+6]) / 6]
+                juros_sen[i:i+6] = [sum(juros_sen[i:i+6]) / 6]
+                juros_sub[i:i+6] = [sum(juros_sub[i:i+6]) / 6]
+                amort_sen[i:i+6] = [sum(amort_sen[i:i+6]) / 6]
+                amort_sub[i:i+6] = [sum(amort_sub[i:i+6]) / 6]
+                amex_sen[i:i+6] = [sum(amex_sen[i:i+6]) / 6]
+                amex_sub[i:i+6] = [sum(amex_sub[i:i+6]) / 6]
+                self.props['recebimento'][i:i+6] = [sum(self.props['recebimento'][i:i+6]) / 6]
+
+                self.months[i] = '{}º {}'.format(
+                    self.merge_residue[:long_term_count].count(
+                        self.merge_residue[long_term_count]
+                    ) + 1,
+                    self.merge_residue[long_term_count]
+                )
+
+                long_term_count += 1
+            elif term == 'Ano':
+                curva[i:i+12] = [sum(curva[i:i+12]) / 12]
+                pagamento[i:i+12] = [sum(pagamento[i:i+12]) / 12]
+                juros_sen[i:i+12] = [sum(juros_sen[i:i+12]) / 12]
+                juros_sub[i:i+12] = [sum(juros_sub[i:i+12]) / 12]
+                amort_sen[i:i+12] = [sum(amort_sen[i:i+12]) / 12]
+                amort_sub[i:i+12] = [sum(amort_sub[i:i+12]) / 12]
+                amex_sen[i:i+12] = [sum(amex_sen[i:i+12]) / 12]
+                amex_sub[i:i+12] = [sum(amex_sub[i:i+12]) / 12]
+                self.props['recebimento'][i:i+12] = [sum(self.props['recebimento'][i:i+12]) / 12]
+
+                self.months[i] = '{}º {}'.format(
+                    self.merge_residue[:long_term_count].count(
+                        self.merge_residue[long_term_count]
+                    ) + 1,
+                    self.merge_residue[long_term_count]
+                )
+
+                long_term_count += 1
 
         self.values = np.array(list(zip(
             curva,
@@ -245,18 +358,28 @@ class TableCell(Cell):
             bold=True,
             color=RGBColor(255, 255, 255),
             fill_color=RGBColor(0x16, 0x36, 0x5C),
-            font_size=Pt(10)
+            font_size=Pt(9)
         )
+
+        def get_multiplier(month):
+            if 'Trimestre' in month:
+                return 3
+            elif 'Semestre' in month:
+                return 6
+            elif 'Ano' in month:
+                return 12
+            else:
+                return 1
 
         for header, *row in np.concatenate(([headers], values)).T:
             self.add_table_row(
                 (
                     (locale.format_string(
                         'R$ %.3f',
-                        float(value),
+                        float(value) * get_multiplier(months[i]),
                         True
                     ) if float(value) > 0 else '-')
-                    for value in row
+                    for i, value in enumerate(row)
                 ), header
             )
 
@@ -337,7 +460,7 @@ class Slide(FSlide):
         chart_row = Row(
             inputs,
             {
-                'height': .375 * slide_height - note_height / 2,
+                'height': .375 * slide_height - note_height * 2/3,
                 'y_offset': header_row.y_offset + header_row.height
             },
             'chart', 1,
@@ -354,7 +477,7 @@ class Slide(FSlide):
         table_row = Row(
             inputs,
             {
-                'height': .395 * slide_height - note_height / 2,
+                'height': .395 * slide_height - note_height * 1/3,
                 'y_offset': chart_row.y_offset + chart_row.height + offset_adjustment
             },
             'table', 2,
