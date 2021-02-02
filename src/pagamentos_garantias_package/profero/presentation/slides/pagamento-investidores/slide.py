@@ -1,5 +1,4 @@
 from pptx.util import Cm, Pt
-from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.dml.color import RGBColor
 
@@ -45,10 +44,8 @@ class TableCell(Cell):
         self.table = slide.shapes.add_table(
             14, 3,
             self.x_offset + self.width / 2 - table_width / 2,
-            self.parent_row.y_offset +\
-                self.parent_row.height / 2 -\
-                table_height / 2 +\
-                y_correction,
+            self.parent_row.y_offset + self.parent_row.height / 2 -
+            table_height / 2 + y_correction,
             int(table_width), int(table_height)
         ).table
 
@@ -273,6 +270,7 @@ class TableCell(Cell):
             font_family='Calibri',
             font_size=Pt(9),
             color=RGBColor(0, 0, 0),
+            bold=True,
         )
 
         for i in range(len(values) // 2 - 1):

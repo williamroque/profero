@@ -1,28 +1,27 @@
+import sys
+
+import numpy
+
 from spreadsheet_parser import Parser
+
+numpy.set_printoptions(threshold=sys.maxsize)
 
 schema = {
     'file-type': 'csv',
     'sections': {
         'root': {
-            'header-row': 4,
+            'header-row': 7,
             'groups': {
-                'data': {
-                    'query': 'DATA',
-                    'dtype': 'date'
+                'valores': {
+                    'query': 'Valor\nPago',
+                    'subquery': ['Identificação', 'Total Geral:'],
+                    'dtype': 'float',
                 },
-                'vn': {
-                    'query': 'VN',
-                    'dtype': 'float'
-                },
-                'juros': {
-                    'query': ' JUROS (R$) ',
-                    'dtype': 'float'
-                }
             }
         }
     }
 }
 
 parser = Parser(schema)
-data_column = parser.read('~/desktop/18_pu.csv')['root']['juros']
+data_column = parser.read('~/desktop/boletins/jan-20.csv')['root']['valores']
 print(data_column)

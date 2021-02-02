@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 # Essa classe lê e processa planilhas `.xlsx` e `.csv`
@@ -7,13 +8,20 @@ class Parser():
     def __init__(self, schema):
         self.schema = schema
 
-    # Ler e processar planilha
     def read(self, path):
-        # O modelo deve especificar se o formato do arquivo é `.xlsx` ou `.csv`.
-        # Tive problemas com o `.xlsx` quando o arquivo foi gerado pelo MEGA
-        # (provavelmente alguma inconsistência com as fórmulas ou metadados).
-        # Converta em `.csv` e revise os valores quando for o caso.
-        # Confira o arquivo `test.py` para ver um exemplo de modelo.
+        """
+        Ler e processar planilha.
+
+        O modelo deve especificar se o formato do arquivo é `.xlsx` ou `.csv`.
+        Tive problemas com o `.xlsx` quando o arquivo foi gerado pelo MEGA
+        (provavelmente alguma inconsistência com as fórmulas ou metadados).
+        Converta em `.csv` e revise os valores quando for o caso.
+        Confira o arquivo `test.py` para ver um exemplo de modelo.
+
+        Argumentos:
+        path (str) -- caminho do arquivo a ser lido
+        """
+
         if self.schema['file-type'] == 'xslx':
             df = pd.read_excel(path, header=None)
         else:
@@ -43,14 +51,38 @@ class Parser():
                     # células em branco
                     df = df.dropna(subset=[group['query']])
 
-                    # Converter a coluna em uma matriz `numpy` unidimensional
-                    result[section_id][group_id] = df[group['query']].to_numpy()
+                    # Converter a coluna em uma matriz `numpy` unidimensional e usar somente
+                    # os valores especificados pelo `subquery`, se tiver
+                    if 'subquery' in group:
+                        subquery, pattern = group['subquery']
+
+                        group_result = df.loc[df[subquery] == pattern][group['query']]
+                    else:
+                        group_result = df[group['query']]
+
+                    result[section_id][group_id] = group_result.to_numpy()
                 elif group['dtype'] == 'float':
                     # Já que o tipo é decimal/numérico (ver ^), filtrar a coluna por valores
                     # numéricos
                     df[group['query']][df[group['query']].apply(lambda x: str(x).isnumeric())]
 
-                    # Converter a coluna em uma matriz `numpy` unidimensional
-                    result[section_id][group_id] = df[group['query']].to_numpy()
+                    # Remover todos os valores `NaN` criados acima e por
+                    # células em branco
+                    df = df.dropna(subset=[group['query']])
+
+                    # Converter a coluna em uma matriz `numpy` unidimensional de valores
+                    # `float` (removendo as vírgulas) e usar somente os valores especificados
+                    # pelo `subquery`, se tiver
+                    if 'subquery' in group:
+                        subquery, pattern = group['subquery']
+
+                        group_result = df.loc[df[subquery] == pattern][group['query']]
+                    else:
+                        group_result = df[group['query']]
+
+                    result[section_id][group_id] = np.apply_along_axis(
+                        lambda xs: [float(x.replace(',', '')) for x in xs],
+                        0, group_result.to_numpy()
+                    )
 
         return result

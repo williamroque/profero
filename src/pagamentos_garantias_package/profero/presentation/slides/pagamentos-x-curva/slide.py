@@ -15,6 +15,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FuncFormatter
 import matplotlib.font_manager as font_manager
 
+from profero.util.parser.spreadsheet_parser import Parser
+
 import numpy as np
 
 import io
@@ -47,6 +49,34 @@ class ChartCell(Cell):
         self.props = props
 
         self.merge_residue = []
+
+        boletim_schema = {
+            'file-type': 'csv',
+            'sections': {
+                'root': {
+                    'header-row': 7,
+                    'groups': {
+                        'valores': {
+                            'query': 'Valor\nPago',
+                            'subquery': ['Identificação', 'Total Geral:'],
+                            'dtype': 'float',
+                        },
+                    }
+                }
+            }
+        }
+
+        parser = Parser(boletim_schema)
+
+        self.recebimento = []
+
+        for month in self.props['recebimento']:
+            total_geral = 0
+            for path in month:
+                print(path)
+                total_geral += parser.read(path)['root']['valores'][0]
+
+            self.recebimento.append(total_geral)
 
     def merge(self, n):
         if n == 3:
@@ -161,7 +191,7 @@ class ChartCell(Cell):
                 amort_sub[i:i+3] = [sum(amort_sub[i:i+3]) / 3]
                 amex_sen[i:i+3] = [sum(amex_sen[i:i+3]) / 3]
                 amex_sub[i:i+3] = [sum(amex_sub[i:i+3]) / 3]
-                self.props['recebimento'][i:i+3] = [sum(self.props['recebimento'][i:i+3]) / 3]
+                self.recebimento[i:i+3] = [sum(self.recebimento[i:i+3]) / 3]
 
                 self.months[i] = '{}º {}'.format(
                     self.merge_residue[:long_term_count].count(
@@ -180,7 +210,7 @@ class ChartCell(Cell):
                 amort_sub[i:i+6] = [sum(amort_sub[i:i+6]) / 6]
                 amex_sen[i:i+6] = [sum(amex_sen[i:i+6]) / 6]
                 amex_sub[i:i+6] = [sum(amex_sub[i:i+6]) / 6]
-                self.props['recebimento'][i:i+6] = [sum(self.props['recebimento'][i:i+6]) / 6]
+                self.recebimento[i:i+6] = [sum(self.recebimento[i:i+6]) / 6]
 
                 self.months[i] = '{}º {}'.format(
                     self.merge_residue[:long_term_count].count(
@@ -199,7 +229,7 @@ class ChartCell(Cell):
                 amort_sub[i:i+12] = [sum(amort_sub[i:i+12]) / 12]
                 amex_sen[i:i+12] = [sum(amex_sen[i:i+12]) / 12]
                 amex_sub[i:i+12] = [sum(amex_sub[i:i+12]) / 12]
-                self.props['recebimento'][i:i+12] = [sum(self.props['recebimento'][i:i+12]) / 12]
+                self.recebimento[i:i+12] = [sum(self.recebimento[i:i+12]) / 12]
 
                 self.months[i] = '{}º {}'.format(
                     self.merge_residue[:long_term_count].count(
@@ -219,7 +249,7 @@ class ChartCell(Cell):
             juros_sub,
             amex_sub,
             pagamento,
-            self.props['recebimento']
+            self.recebimento
         )))
 
         chart_width = 12.5

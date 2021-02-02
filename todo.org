@@ -1,0 +1,5 @@
+* Todo
+** Slides
+- Adapt spreadsheet parser to dynamically locate correct row upon failure (as
+  an option, for instance)
+- Finish pagamentos-x-curva for recebimentos

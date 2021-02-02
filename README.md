@@ -1,3 +1,2 @@
 # Profero
-
-A PPT report automation platform.
+[ˈpɾoː.fɛ.ɾoː] : *A PPT report automation platform.*
