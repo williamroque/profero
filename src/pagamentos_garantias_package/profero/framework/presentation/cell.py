@@ -1,16 +1,21 @@
+"""Esse módulo contém a classe `Cell`."""
+
 from pptx.util import Cm, Pt
 from pptx.oxml.xmlchemy import OxmlElement
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.dml.color import RGBColor
-from pptx.enum.action import PP_ACTION
-from pptx.opc.constants import RELATIONSHIP_TYPE as RT
 
 
-# Essa classe é o átomo da apresentação; representa uma célula. Possui métodos para criar
-# instâncias `Shape`. No PowerPoint, o shape é basicamente a superclasse da qual todos os
-# elementos são derivados, inclusive texto e tabelas.
 class Cell():
+    """
+    Essa classe é o átomo da apresentação; representa uma célula.
+
+    Possui métodos para criar instâncias `Shape`. No PowerPoint,
+    o shape é basicamente a superclasse da qual todos os
+    elementos são derivados, inclusive texto e tabelas.
+    """
+
     def __init__(self, inputs, props, cell_id, index, parent_row):
         self.inputs = inputs
 
@@ -29,12 +34,20 @@ class Cell():
         # A instância `Row` que controla essa instância
         self.parent_row = parent_row
 
-    # Criar um `Shape` retangular. Os parâmetros `rect_width` e `rect_height` representam
-    # a largura e altura do retângulo, respetivamente; `fill_color` representa a cor de
-    # fundo; `inherit_shadow` controla a herança da propriedade de sombra do `Shape` pai
-    # (em geral, `True` significa que tem sombra e `False` que não tem; `show_border`
-    # controla a borda do retângulo.
     def create_rect(self, x, y, rect_width, rect_height, fill_color=RGBColor(0xB, 0x5D, 0x77), inherit_shadow=False, show_border=False):
+        """
+        Criar um `Shape` retangular.
+
+        * `x (float)` -- Posição horizontal.
+        * `y (float)` -- Posição vertical.
+        * `rect_width (float)` -- A largura do retângulo.
+        * `rect_height (float)` -- A altura do retângulo.
+        * `fill_color (RGBColor)` --  A cor de fundo.
+        * `inherit_shadow (bool)` -- Herança da propriedade de sombra do `Shape` pai
+        (em geral, `True` significa que tem sombra e `False` que não tem).
+        * `show_border (bool)` -- Borda do retângulo.
+        """
+
         # Criar `Shape` usando a instância `pptx.Slide` criada pela instância `Slide`
         # que controla a instância `Row` que controla essa instância
         shape = self.parent_row.parent_slide.slide.shapes.add_shape(
@@ -55,15 +68,38 @@ class Cell():
 
         return shape
 
-    # Usar fundo
     def set_fill_color(self, shape, color):
+        """
+        Usar fundo.
+
+        * `shape (Shape)` -- `Shape` a ser modificado.
+        * `color (RGBColor)` -- A cor a ser usada.
+        """
+
         shape.fill.solid()
         shape.fill.fore_color.rgb = color
 
-    # Definir texto de uma instância `Shape`. O único parâmetro que talvez não seja
-    # autoexplicatório é `slide_link` que recebe um pointer a uma instância `Slide` e
-    # cria um link PowerPoint apontando para ele.
     def set_text(self, shape, text, alignment=PP_ALIGN.LEFT, font_family='Calibri', font_size=Pt(18), bold=False, italic=None, color=RGBColor(0xFF, 0xFF, 0xFF), slide_link=None, vertical_anchor=MSO_ANCHOR.MIDDLE, margin_left=Cm(.25), margin_top=Cm(.25), margin_right=Cm(.25), margin_bottom=Cm(.25)):
+        """
+        Definir texto de uma instância `Shape`.
+
+        * `shape (Shape)` -- O shape a ser modificado.
+        * `text (str)` -- O conteúdo a ser adicionado.
+        * `alignment (PP_ALIGN)` -- O alinhamento horizontal do texto.
+        * `font_family (str)` -- O nome da fonte.
+        * `font_size (Pt)` -- O tamanho da fonte.
+        * `bold (bool)` -- Negrito.
+        * `italic (bool)` -- Itálico.
+        * `color (RGBColor)` -- Cor.
+        * `slide_link (Slide)` -- Instância `Slide` para criar um link
+        PowerPoint apontando para ele.
+        * `vertical_anchor (MSO_ANCHOR)` -- Alinhamento vertical do texto.
+        * `margin_left (Cm/Inches)` -- Margem esquerda.
+        * `margin_top (Cm/Inches)` -- Margem de cima.
+        * `margin_right (Cm/Inches)` -- Margem direita.
+        * `margin_bottom (Cm/Inches)` -- Margem de baixo.
+        """
+
         # Criar/esvaziar texto do `Shape`
         text_frame = shape.text_frame
         text_frame.clear()
@@ -112,19 +148,29 @@ class Cell():
         font.color.rgb = color
         font.underline = False
 
-    # Criar elemento XML do PowerPoint com um atributo arbitrário
     def sub_element(self, parent, tagname, **kwargs):
-            element = OxmlElement(tagname)
-            element.attrib.update(kwargs)
-            parent.append(element)
-            return element
+        """
+        Criar elemento XML do PowerPoint com um atributo arbitrário.
+        """
 
-    # Definir a transparência de um `Shape`
+        element = OxmlElement(tagname)
+        element.attrib.update(kwargs)
+        parent.append(element)
+
+        return element
+
     def set_shape_transparency(self, shape, alpha):
+        """
+        Definir a transparência de um `Shape`.
+        """
+
         ts = shape.fill._xPr.solidFill
         sF = ts.get_or_change_to_srgbClr()
         sE = self.sub_element(sF, 'a:alpha', val=str((100 - alpha) * 1000))
 
-    # Método de renderização a ser implementado por subclasses
     def render(self, slide):
-        pass
+        """
+        Método de renderização a ser implementado por subclasses.
+
+        * `slide (Slide)`
+        """

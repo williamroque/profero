@@ -1,33 +1,37 @@
-# Esse slide representa o título da apresentação
+"""
+Esse slide representa o título da apresentação
+"""
+
+import importlib.resources
+
+import time
+import locale
 
 from pptx.util import Cm, Pt
-from pptx.enum.shapes import MSO_SHAPE
 from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN
 
 from profero.framework.presentation.slide import Slide as FSlide
 from profero.framework.presentation.row import Row
 from profero.framework.presentation.cell import Cell
 
-import importlib.resources
 import profero.assets
-
-import time
-import locale
 
 # Definir a região como Brasil para uso com métodos de formatação numérica
 locale.setlocale(locale.LC_TIME, 'pt_BR')
 
 # Modelo do título
-title_string = """
+TITLE_STRING = """
 CRI Logos {}ª e {}ª Séries – Relatório de Pagamentos e Garantias
 Certificados de Recebíveis Imobiliários
 Setembro de 2020
 """.strip()
 
 
-# Célula responsável pelo logotipo do cliente
 class ClientLogoCell(Cell):
+    """
+    Célula responsável pelo logotipo do cliente.
+    """
+
     def __init__(self, inputs, client_logo_path, slide_width, parent_row):
         super().__init__(
             inputs,
@@ -47,7 +51,10 @@ class ClientLogoCell(Cell):
         self.picture_height = Cm(4.23)
 
     def render(self, slide):
-        # Criar imagem no slide `pptx`
+        """
+        Criar imagem no slide `pptx`.
+        """
+
         slide.shapes.add_picture(
             self.client_logo_path,
             self.width / 2 - self.picture_width / 2,
@@ -56,8 +63,11 @@ class ClientLogoCell(Cell):
         )
 
 
-# Célula responsável pelo título
 class TitleCell(Cell):
+    """
+    Célula responsável pelo título.
+    """
+
     def __init__(self, inputs, slide_width, props, parent_row):
         super().__init__(
             inputs,
@@ -72,6 +82,12 @@ class TitleCell(Cell):
         self.props = props
 
     def render(self, slide):
+        """
+        Renderizar.
+
+        * slide (Slide)
+        """
+
         # Criar retângulo para servir de fundo ao título
         shape = self.create_rect(
             Pt(-1), self.parent_row.y_offset,
@@ -87,7 +103,7 @@ class TitleCell(Cell):
         primeira_serie = self.inputs.get('primeira-serie')
         self.set_text(
             shape,
-            title_string.format(
+            TITLE_STRING.format(
                 primeira_serie,
                 primeira_serie + 1,
                 time.strftime(
@@ -99,8 +115,11 @@ class TitleCell(Cell):
         )
 
 
-# Célula responsável pelo logotipo da Logos
 class LogoCell(Cell):
+    """
+    Célula responsável pelo logotipo da Logos.
+    """
+
     def __init__(self, inputs, slide_width, parent_row):
         picture_width = Cm(6.32)
         margin = Cm(.5)
@@ -119,6 +138,12 @@ class LogoCell(Cell):
         self.picture_height = Cm(3.2)
 
     def render(self, slide):
+        """
+        Renderizar.
+
+        * slide (Slide)
+        """
+
         # Importar logo do diretório `assets` (recursos)
         with importlib.resources.path(profero.assets, 'logo.png') as p:
             logo_path = str(p)
@@ -133,6 +158,10 @@ class LogoCell(Cell):
 
 
 class Slide(FSlide):
+    """
+    Slide `title`.
+    """
+
     def __init__(self, inputs, index, props, _, parent_presentation):
         # Importar fundo do diretório `assets`
         with importlib.resources.path(profero.assets, 'background.png') as p:
@@ -162,7 +191,12 @@ class Slide(FSlide):
         )
 
         # Célula do logo do cliente
-        client_logo_cell = ClientLogoCell(inputs, inputs.get('project-logo'), slide_width, client_logo_row)
+        client_logo_cell = ClientLogoCell(
+            inputs,
+            inputs.get('project-logo'),
+            slide_width,
+            client_logo_row
+        )
         client_logo_row.add_cell(client_logo_cell)
 
         self.add_row(client_logo_row)

@@ -1,3 +1,5 @@
+"""Esse módulo contém a subclasse `Slideshow`."""
+
 import importlib
 from pptx.util import Cm
 
@@ -5,6 +7,10 @@ from profero.framework.presentation.presentation import Presentation
 
 
 class Slideshow(Presentation):
+    """
+    Subclasse do `Presentation` para uso como singleton.
+    """
+
     def __init__(self, inputs):
         super().__init__(
             inputs,
@@ -38,4 +44,3 @@ class Slideshow(Presentation):
                 table_of_contents_slide = module_slide
 
             self.add_slide(module_slide)
-

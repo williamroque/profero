@@ -1,10 +1,14 @@
+"""Esse módulo serve para ler e processar planilhas"""
+
 import pandas as pd
 import numpy as np
 
 
-# Essa classe lê e processa planilhas `.xlsx` e `.csv`
 class Parser():
-    # O dicionário schema descreve o modelo da planilha
+    """
+    Essa classe lê e processa planilhas `.xlsx` e `.csv`.
+    """
+
     def __init__(self, schema):
         self.schema = schema
 
@@ -18,8 +22,7 @@ class Parser():
         Converta em `.csv` e revise os valores quando for o caso.
         Confira o arquivo `test.py` para ver um exemplo de modelo.
 
-        Argumentos:
-        path (str) -- caminho do arquivo a ser lido
+        * `path (str)` -- caminho do arquivo a ser lido
         """
 
         if self.schema['file-type'] == 'xslx':

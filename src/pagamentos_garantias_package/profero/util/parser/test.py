@@ -2,7 +2,7 @@ import sys
 
 import numpy
 
-from spreadsheet_parser import Parser
+from profero.util.parser.spreadsheet_parser import Parser
 
 numpy.set_printoptions(threshold=sys.maxsize)
 

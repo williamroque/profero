@@ -1,21 +1,28 @@
+"""Esse módulo contém a classe `Slide`."""
+
 from pptx.util import Pt
 
 
-# Essa classe controla todas as instâncias da classe `Row` e representa o slide
 class Slide():
+    """
+    Essa classe controla todas as instâncias da classe `Row` e representa o slide.
+    """
+
     def __init__(self, inputs, slide_id, slide_type, index, background, parent_presentation):
+        """
+        * `inputs (dict)` -- Valores de entrada.
+        * `slide_id (str)` -- ID do slide.
+        * `slide_type (int)` -- O tipo do slide de acordo com o PowerPoint;
+        o tipo 6 é o em branco
+        * `index (int)` -- Posição relativa do slide.
+        * `background (str)` -- O caminho do fundo a ser usado.
+        * `parent_presentation (Presentation)` -- Presentação que contém esse slide.
+        """
+
         self.inputs = inputs
-
-        # O id do slide para usar com o método `query` da classe `Presentation`
         self.slide_id = slide_id
-
-        # O tipo do slide de acordo com o PowerPoint; o tipo 6 é o em branco
         self.slide_type = slide_type
-
-        # A posição relativa do slide
         self.index = index
-
-        # A classe `Presentation` que controla esse slide 
         self.parent_presentation = parent_presentation
 
         # Criar um slide novo pelo `python-pptx` de acordo com o tipo de
@@ -25,10 +32,9 @@ class Slide():
             parent_presentation.presentation.slide_layouts[self.slide_type]
         )
 
-        # O fundo a ser usado
         self.background = background
 
-        if self.background != None:
+        if self.background is not None:
             # Criar um `Shape` de imagem usando o `self.background` e ajustar
             # para cobrir todo o slide
             background_image = self.slide.shapes.add_picture(
@@ -45,12 +51,21 @@ class Slide():
         # Armazena todas as instâncias da classe `Row`
         self.rows = []
 
-    # Adicionar uma instância `Row`
     def add_row(self, row):
+        """
+        Adicionar uma instância `Row`.
+
+        * `row (Row)` -- A instância `Row` a ser adicionada.
+        """
         self.rows.append(row)
 
-    # Encontrar uma instância `Row` que tenha o id especificado
     def query(self, row_id):
+        """
+        Encontrar uma instância `Row` que tenha o id especificado
+
+        * `row_id (str)` -- O ID da fileira a ser procurada.
+        """
+
         # Usar um gerador para parar no primeiro valor válido
         search_generator = (row for row in self.rows if row.row_id == row_id)
         try:
@@ -58,7 +73,10 @@ class Slide():
         except StopIteration:
             return None
 
-    # Chamar o método `render` de todas as instâncias `Row`
-    def render(self, presentation):
+    def render(self):
+        """
+        Chamar o método `render` de todas as instâncias `Row`.
+        """
+
         for row in self.rows:
             row.render(self.slide)

@@ -1,9 +1,13 @@
+"""Esse módulo contém a classe `Presentation`."""
+
 import pptx
 
 
-# Essa clase controla todas as instâncias `Slide` e representa a apresentação
-# enteira
 class Presentation():
+    """
+    Essa classe controla todas as instâncias `Slide` e representa a apresentação
+    inteira.
+    """
     def __init__(self, inputs, props):
         self.inputs = inputs
 
@@ -18,21 +22,35 @@ class Presentation():
         # O caminho do arquivo de saída
         self.output_path = props['output_path']
 
-    # Adicionar uma instância `Slide`
     def add_slide(self, slide):
+        """
+        Adicionar uma instância `Slide`.
+
+        * `slide (Slide)` -- A instância a ser adicionada.
+        """
         self.slides.append(slide)
 
-    # Ver comentário no arquivo `slide.py`
     def query(self, slide_id):
+        """
+        Encontrar uma instância `Slide` que tenha o id especificado.
+
+        * `slide_id (str)` -- Código de identificação do slide.
+        """
+
+        # Usar um gerador para parar no primeiro valor válido
         search_generator = (slide for slide in self.slides if slide.slide_id == slide_id)
         try:
             return next(search_generator)
         except StopIteration:
             return None
 
-    # Chamar o método `render` em todas as instâncias `Slide` e salvar a
-    # apresentação no arquivo de saída
     def render(self):
+        """
+        Chamar o método `render` em todas as instâncias `Slide` e salvar a
+        apresentação no arquivo de saída.
+        """
+
         for slide in self.slides:
-            slide.render(self.presentation)
+            slide.render()
+
         self.presentation.save(self.output_path)

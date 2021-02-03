@@ -1,6 +1,22 @@
-# Essa classe controla as instâncias da classe `Cell`; representa uma linha (fileira)
+"""
+Esse módulo contém a classe `Row`.
+"""
+
+
 class Row():
+    """
+    Essa classe controla as instâncias da classe `Cell`; representa uma linha (fileira).
+    """
+
     def __init__(self, inputs, props, row_id, index, parent_slide):
+        """
+        * `inputs (dict)` -- Valores de entrada.
+        * `props (dict)` -- Propriedades da fileira.
+        * `row_id (str)` -- ID da fileira.
+        * `index (int)` -- Posição relativa da fileira.
+        * `parent_slide (Slide)` -- Slide que contém essa fileira.
+        """
+
         self.inputs = inputs
 
         # A altura da linha
@@ -21,19 +37,35 @@ class Row():
         # As instâncias da classe `Cell` que essa instância controla
         self.cells = []
 
-    # Adicionar uma instância de `Cell`
     def add_cell(self, cell):
+        """
+        Adicionar uma instância de `Cell`.
+
+        * `cell (Cell)` -- A instância a ser adicionada.
+        """
+
         self.cells.append(cell)
 
-    # Procurar por uma instância `Cell`; ver comentário em `slide.py`
     def query(self, cell_id):
+        """
+        Encontrar uma instância `Cell` que tenha o id especificado.
+
+        * `cell_id (str)` -- O ID da célula a ser procurada.
+        """
+
+        # Usar um gerador para parar no primeiro valor válido
         search_generator = (cell for cell in self.cells if cell.cell_id == cell_id)
         try:
             return next(search_generator)
         except StopIteration:
             return None
 
-    # Chamar método `render` em todas as instâncias `Cell`
     def render(self, slide):
+        """
+        Chamar método `render` em todas as instâncias `Cell`.
+
+        * `slide (Slide)` -- A instância `Slide`.
+        """
+
         for cell in self.cells:
             cell.render(slide)
