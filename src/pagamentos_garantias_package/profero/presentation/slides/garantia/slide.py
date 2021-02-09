@@ -26,6 +26,11 @@ NOTE = """
 ➢ Limíte de Garantia Mínima: {:.0%}
 """.strip()
 
+INFO_TEXT = """
+• Sobregarantia Recebíveis: R$ {:.2f} MM / R$ {:.2f} MM = {:.2f}%
+• Sobregarantia Total: R$ {:.2f} MM / R$ {:.2f} MM = {:.2f}%
+"""
+
 
 class ChartCell(Cell):
     def __init__(self, inputs, slide_width, props, parent_row):
@@ -46,156 +51,160 @@ class ChartCell(Cell):
         slide = self.parent_row.parent_slide
 
         values = np.array([
-            self.props['direitos-creditorios-adimplidos'],
-            self.props['direitos-creditorios-inadimplidos'],
+            self.props['recebiveis-adimplidos'],
+            self.props['recebiveis-inadimplidos'],
             self.props['estoque'],
-            self.props['fundo-reserva']
+            self.props['fundo-reserva'],
+        ])
+
+        dual_values = np.array([
+            self.props['x-senior'],
+            self.props['x-subordinada'],
         ])
 
         labels = (
-            'Direitos Creditórios Adimplidos',
-            'Direitos Creditórios Inadimplidos',
-            'Estoque',
-            'Fundo de Reserva'
+            'RECEBÍVEIS\nADIMPLENTES',
+            'RECEBÍVEIS\nINADIMPLENTES',
+            'ESTOQUE',
+            'FUNDO DE RESERVA',
         )
 
-        annotations = [
-            (
-                'Saldo do CRI – R$ {:.2f} MM'.format(
-                    self.inputs.get('saldo-cri') / 1e+6
-                ),
-                self.inputs.get('saldo-cri')
-            ),
-            (
-                'Limite de Garantia Mínima – {:.0%} – R$ {:.2f} MM'.format(
-                    self.props['garantia-minima'] / self.inputs.get('saldo-cri'),
-                    self.props['garantia-minima'] / 1e+6
-                ).replace('.', ','),
-                self.props['garantia-minima']
-            ),
-            (
-                'Gatilho de Sobregarantia – {:.0%} – R$ {:.2f} MM'.format(
-                    self.props['gatilho-sobregarantia'] / self.inputs.get('saldo-cri'),
-                    self.props['gatilho-sobregarantia'] / 1e+6
-                ).replace('.', ','),
-                self.props['gatilho-sobregarantia']
-            ),
-            (
-                'Garantia Total da Operação – {:.0%} – R$ {:.2f} MM'.format(
-                    values.sum() / self.inputs.get('saldo-cri'),
-                    values.sum() / 1e+6
-                ).replace('.', ','),
-                values.sum()
-            )
+        dual_labels = [
+            'SÊNIOR',
+            'SUBORDINADA',
         ]
 
-        chart_width = 11.24
-        chart_height = 4.52
+        chart_width = 10.5
+        chart_height = 4
 
-        plot_width = .4
-        plot_x = 1/2 - plot_width/2 + .1
+        plot_width = .7
+        plot_x = 1/2 - plot_width/2
 
         fig = plt.figure(figsize=(chart_width, chart_height))
         ax = fig.add_axes([plot_x, .05, plot_width, .9])
 
-        ax.tick_params(
-            axis='x',
-            which='both',
-            bottom=False,
-            top=False,
-            labelbottom=False
-        )
-
-        ax.tick_params(
-            axis='y',
-            colors='#0F3B5E',
-            labelsize=8
-        )
-
-        ax.ticklabel_format(useOffset=False, style='plain')
-        ax.yaxis.set_major_formatter(FuncFormatter(lambda x, _: '{:,.2f}'.format(x) if x != 0 else '-'))
-
-        ax.spines['bottom'].set_color('#ddd')
-        ax.spines['top'].set_color('#ddd')
-        ax.spines['left'].set_color('#666')
-        ax.spines['right'].set_color('#fff')
-
-        ticks = np.arange(10) * 10 ** (len(str(int(sum(values)))) - 1)
-        plt.yticks(ticks=ticks)
-
-        ax.grid(
-            axis='y',
-            color='#eee'
-        )
-        ax.set_axisbelow(True)
+        plt.axis('off')
 
         ax.set_xlim(-.5, .5)
 
-        bar_width = .4
+        bar_width = .26
+        bar_margin = .09
 
-        colors = ['#222A35', '#333F50', '#8497B0', '#ADB9CA']
-        font_colors = ['#fff', '#ddd', '#222', '#000']
+        bar_displacement = bar_width / 2 + bar_margin
 
-        bars = []
+        annotation_bracket_height = 14
+
+        colors = [
+            '#D30000',
+            '#2E4F99',
+        ]
+
+        font_colors = [
+            '#FFFFFF',
+            '#FFFFFF',
+        ]
+
+        for (i, value), csum in zip(enumerate(dual_values), dual_values.cumsum()):
+            bottom = csum - value
+
+            ax.bar(
+                -bar_displacement, value,
+                bar_width, bottom=bottom,
+                color=colors[i]
+            )
+            plt.text(
+                -bar_displacement, bottom + value / 2,
+                '{}\nR$ {:.2f} MM'.format(
+                    dual_labels[i],
+                    value / 1e+6
+                ).replace('.', ','),
+                ha='center',
+                va='center',
+                color=font_colors[i],
+                fontsize=9,
+                fontweight='extra bold',
+                fontname='Calibri'
+            )
+
+        ax.annotate(
+            'R$ {:.2f} MM'.format(
+                dual_values.sum() / 1e+6
+            ).replace('.', ','),
+            xy=(-bar_margin + .015, dual_values.sum() / 2),
+            xytext=(-bar_margin + .035, dual_values.sum() / 2),
+            fontsize=9,
+            fontweight='extra bold',
+            fontname='Calibri',
+            ha='left',
+            va='center',
+            arrowprops=dict(
+                arrowstyle='-[, widthB={}, lengthB=.5'.format(
+                    annotation_bracket_height * dual_values.sum() / values.sum()
+                ),
+                lw=.5
+            )
+        )
+
+        colors = [
+            '#00BA54',
+            '#FF0000',
+            '#436AC7',
+            '#F8FF00',
+        ]
+        font_colors = [
+            '#ffffff',
+            '#ffffff',
+            '#ffffff',
+            '#003960',
+        ]
+
+        max_value = values.max()
+
         for (i, value), csum in zip(enumerate(values), values.cumsum()):
             bottom = csum - value
 
-            bars.append(
-                ax.bar(
-                    0, value,
-                    bar_width, bottom=bottom,
-                    color=colors[i]
-                )[0]
+            height_threshold = .03 * max_value
+
+            ax.bar(
+                bar_displacement, value,
+                bar_width, bottom=bottom,
+                color=colors[i]
             )
             plt.text(
-                0, bottom + value / 2,
-                'R$ {:.2f} MM'.format(
+                bar_displacement, bottom + value / 2,
+                '{}\nR$ {:.2f} MM'.format(
+                    labels[i],
                     value / 1e+6
                 ).replace('.', ','),
-                ha='center', va='center',
+                ha='center',
+                va='center' if value > height_threshold else 'bottom',
                 color=font_colors[i],
                 fontsize=9,
-                fontweight='bold'
+                fontweight='extra bold',
+                fontname='Calibri'
             )
 
-        for note, value in annotations:
-            arrow = patches.FancyArrowPatch(
-                (-.3, value),
-                (.3, value),
-                arrowstyle='Simple,head_width=5,head_length=10'
+        ax.annotate(
+            'R$ {:.2f} MM'.format(
+                values.sum() / 1e+6
+            ).replace('.', ','),
+            xy=(.37, values.sum() / 2),
+            xytext=(.4, values.sum() / 2),
+            fontsize=9,
+            fontname='Calibri',
+            fontweight='extra bold',
+            ha='left',
+            va='center',
+            arrowprops=dict(
+                arrowstyle='-[, widthB={}, lengthB=.5'.format(
+                    annotation_bracket_height
+                ),
+                lw=.5
             )
-
-            ax.add_patch(arrow)
-
-            v1 = arrow.get_path().vertices[0:3, :]
-            c1 = arrow.get_path().codes[0:3]
-            p1 = matplotlib.path.Path(v1, c1)
-            pp1 = patches.PathPatch(p1, color='#000', linestyle='--', fill=False, lw=.8)
-            arrow.axes.add_patch(pp1)
-
-            v2 = arrow.get_path().vertices[3:8, :]
-            c2 = arrow.get_path().codes[3:8]
-            c2[0] = 1
-            p2 = matplotlib.path.Path(v2,c2)
-            pp2 = patches.PathPatch(p2, color='#000', lw=1.5, linestyle='-')
-            arrow.axes.add_patch(pp2)
-            arrow.remove()
-
-            ax.text(
-                .31,
-                (value / values.sum() - .01) * values.sum(), note,
-                fontsize=7
-            )
-
-        ax.legend(
-            bars,
-            labels,
-            bbox_to_anchor=(-.3, .5),
-            frameon=False
         )
 
         image_stream = io.BytesIO()
-        fig.savefig(image_stream, format='png')
+        fig.savefig(image_stream, format='png', dpi=300)
 
         chart_width = Inches(chart_width)
         chart_height = Inches(chart_height)
@@ -211,6 +220,71 @@ class ChartCell(Cell):
         slide.table_of_contents_slide.add_entry(
             slide.title, [slide.index + 1], slide
         )
+
+
+class InfoCell(Cell):
+    def __init__(self, inputs, slide_width, props, parent_row):
+        super().__init__(
+            inputs,
+            {
+                'width': slide_width,
+                'x_offset': 0
+            },
+            'info', 0,
+            parent_row
+        )
+
+        self.slide_width = slide_width
+        self.props = props
+
+    def render(self, slide):
+        box_width = self.width * .5
+        box_height = self.parent_row.height
+
+        info_box = self.create_rect(
+            self.x_offset + self.width / 2 - box_width / 2,
+            self.parent_row.y_offset + self.parent_row.height / 2 - box_height,
+            box_width, box_height
+        )
+        self.set_shape_transparency(info_box, 100)
+
+        values = np.array([
+            self.props['recebiveis-adimplidos'],
+            self.props['recebiveis-inadimplidos'],
+            self.props['estoque'],
+            self.props['fundo-reserva'],
+        ])
+
+        dual_values = np.array([
+            self.props['x-senior'],
+            self.props['x-subordinada'],
+        ])
+
+        recebiveis_adimplidos = self.props['recebiveis-adimplidos']
+
+        dual_values_sum = dual_values.sum()
+        values_sum = values.sum()
+
+        sobregarantia_recebiveis = recebiveis_adimplidos / dual_values_sum
+        sobregarantia_total = values_sum / dual_values_sum
+
+        self.set_text(
+            info_box,
+            INFO_TEXT.format(
+                recebiveis_adimplidos / 1e+6,
+                dual_values_sum / 1e+6,
+                sobregarantia_recebiveis * 100,
+                values_sum / 1e+6,
+                dual_values_sum / 1e+6,
+                sobregarantia_total * 100
+            ).replace('.', ','),
+            font_family='Calibri',
+            font_size=Pt(14),
+            color=RGBColor(0x10, 0x20, 0x30),
+            alignment=PP_ALIGN.LEFT,
+            vertical_anchor=MSO_ANCHOR.MIDDLE
+        )
+            
 
 
 class Slide(FSlide):
@@ -249,7 +323,7 @@ class Slide(FSlide):
         chart_row = Row(
             inputs,
             {
-                'height': .75 * slide_height - note_height,
+                'height': .7 * slide_height - note_height,
                 'y_offset': header_row.y_offset + header_row.height
             },
             'chart', 1,
@@ -261,13 +335,28 @@ class Slide(FSlide):
 
         self.add_row(chart_row)
 
+        info_row = Row(
+            inputs,
+            {
+                'height': .05 * slide_height,
+                'y_offset': chart_row.y_offset + chart_row.height
+            },
+            'info', 2,
+            self
+        )
+
+        info_cell = InfoCell(inputs, slide_width, self.props, info_row)
+        info_row.add_cell(info_cell)
+
+        self.add_row(info_row)
+
         note_row = Row(
             inputs,
             {
                 'height': note_height,
-                'y_offset': chart_row.y_offset + chart_row.height
+                'y_offset': info_row.y_offset + info_row.height
             },
-            'note', 2,
+            'note', 3,
             self
         )
 

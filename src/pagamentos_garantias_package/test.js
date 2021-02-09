@@ -64,10 +64,11 @@ const input = {
                 'date': '07/09/2020',
                 'fundo-reserva': .9 * MM,
                 'estoque': 34980928.786,
-                'direitos-creditorios-inadimplidos':  17357683.41,
-                'direitos-creditorios-adimplidos': 32603090.28,
-                'garantia-minima':  26161893.4771358,
-                'gatilho-sobregarantia': 32603090.28,
+                'recebiveis-inadimplidos':  17357683.41,
+                'recebiveis-adimplidos': 32603090.28,
+                'x-subordinada': 7.71 * MM,
+                'x-senior': 12.09 * MM,
+                'garantia-minima': 28 * MM
             }
         },
         {
