@@ -145,7 +145,7 @@ class LogoCell(Cell):
         """
 
         # Importar logo do diretório `assets` (recursos)
-        with importlib.resources.path(profero.assets, 'logo.png') as p:
+        with importlib.resources.path(profero.assets, 'logo_white.png') as p:
             logo_path = str(p)
 
         # Criar imagem com logo

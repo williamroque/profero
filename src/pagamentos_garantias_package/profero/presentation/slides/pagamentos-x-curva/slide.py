@@ -16,6 +16,7 @@ from matplotlib.ticker import FuncFormatter
 import matplotlib.font_manager as font_manager
 
 from profero.util.parser.spreadsheet_parser import Parser
+from profero.util.parser.models import boletim_schema
 
 import numpy as np
 
@@ -29,7 +30,7 @@ NOTE = """
 ➢ Curva: pagamentos previstos na curva de amortização original dos CRI
 ➢ Pagamentos: valores efetivamente pagos a título de amortização e juros dos CRI seniores e subordinado
 ➢ Valores em reais
-➢ Valores são cumulativos na tabela e médios no gráfico para trimestres, semestres e anos
+➢ Referente aos valores trimestrais/semestrais/anuais, conforme aplicável, os valores são apresentados cumulativamente na tabela e média aritmética mensal no gráfico
 """.strip()
 
 
@@ -50,22 +51,6 @@ class ChartCell(Cell):
 
         self.merge_residue = []
 
-        boletim_schema = {
-            'file-type': 'csv',
-            'sections': {
-                'root': {
-                    'header-row': 7,
-                    'groups': {
-                        'valores': {
-                            'query': 'Valor\nPago',
-                            'subquery': ['Identificação', 'Total Geral:'],
-                            'dtype': 'float',
-                        },
-                    }
-                }
-            }
-        }
-
         parser = Parser(boletim_schema)
 
         self.recebimento = []
@@ -73,7 +58,6 @@ class ChartCell(Cell):
         for month in self.props['recebimento']:
             total_geral = 0
             for path in month:
-                print(path)
                 total_geral += parser.read(path)['root']['valores'][0]
 
             self.recebimento.append(total_geral)
@@ -264,17 +248,34 @@ class ChartCell(Cell):
         fig = plt.figure(figsize=(chart_width, chart_height))
         ax = fig.add_axes([plot_x, plot_y, plot_width, plot_height])
 
+        ## Monochrome:
+        #colors_cycler = cycler(color=[
+        #    '#426AC7',
+        #    '#A5A5A5',
+        #    '#4C98D8',
+        #    '#243F7A',
+        #    '#636363',
+        #    '#145B93'
+        #])
         colors_cycler = cycler(color=[
-            '#426AC7',
-            '#A5A5A5',
-            '#4C98D8',
-            '#243F7A',
-            '#636363',
-            '#145B93'
+            '#395DAF',
+            '#E16600',
+            '#929292',
+            '#EAAC00',
+            '#4387BE',
+            '#44A03E',
+            '#8F9ED6',
+            '#FEA383',
+            '#00BA54'
         ])
-        markers_cycler = cycler(marker=['o', '^'])
+        markers_cycler = cycler(marker=[
+            'o', 'o', '^', 'o', 'o', 'o', 'o', 'o', 'o'
+        ])
+        linestyle_cycler = cycler(linestyle=[
+            '-', '-', '-', '-', '-', '-', '-', '-', '--'
+        ])
 
-        ax.set_prop_cycle(markers_cycler * colors_cycler)
+        ax.set_prop_cycle(markers_cycler + colors_cycler + linestyle_cycler)
 
         ax.plot(self.values)
 

@@ -38,7 +38,8 @@ class Parser():
         # título.
         for section_id, section in self.schema['sections'].items():
             # Configurar a linha especificada pelo modelo como o cabeçalho
-            df.columns = df.iloc[section['header-row']]
+            column, query = section['header-query']
+            df.columns = df.loc[df[df.columns[column]] == query].iloc[0]
 
             result[section_id] = {}
 
@@ -84,8 +85,22 @@ class Parser():
                         group_result = df[group['query']]
 
                     result[section_id][group_id] = np.apply_along_axis(
-                        lambda xs: [float(x.replace(',', '')) for x in xs],
+                        lambda xs: [float(x.replace(',', '') if type(x) == str else x) for x in xs],
                         0, group_result.to_numpy()
                     )
+                elif group['dtype'] == 'string':
+                    # Remover todos os valores `NaN` criados acima e por
+                    # células em branco
+                    df = df.dropna(subset=[group['query']])
+
+                    if 'subquery' in group:
+                        subquery, pattern = group['subquery']
+
+                        group_result = df.loc[df[subquery] == pattern][group['query']]
+                    else:
+                        group_result = df[group['query']]
+
+                    result[section_id][group_id] = group_result.to_numpy()
+
 
         return result

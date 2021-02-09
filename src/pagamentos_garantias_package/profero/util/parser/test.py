@@ -2,26 +2,17 @@ import sys
 
 import numpy
 
-from profero.util.parser.spreadsheet_parser import Parser
+from spreadsheet_parser import Parser
+from models import boletim_schema, saldo_schema
 
 numpy.set_printoptions(threshold=sys.maxsize)
 
-schema = {
-    'file-type': 'csv',
-    'sections': {
-        'root': {
-            'header-row': 7,
-            'groups': {
-                'valores': {
-                    'query': 'Valor\nPago',
-                    'subquery': ['Identificação', 'Total Geral:'],
-                    'dtype': 'float',
-                },
-            }
-        }
-    }
-}
+parser = Parser(boletim_schema)
+data_column = parser.read('~/desktop/boletins/apr-20.csv')['root']['valores']
+print(data_column, '\n\n')
 
-parser = Parser(schema)
-data_column = parser.read('~/desktop/boletins/jan-20.csv')['root']['valores']
-print(data_column)
+parser = Parser(saldo_schema)
+data_column = parser.read('~/desktop/saldos/Saldo 27a28as.xls')['root']
+
+for cliente, atraso in zip(data_column['cliente'], data_column['atraso']):
+    print(cliente, ' --- ', atraso)
