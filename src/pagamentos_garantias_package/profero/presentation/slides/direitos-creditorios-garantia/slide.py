@@ -179,13 +179,16 @@ class ChartCell(Cell):
 
         wedges, texts, autotexts = ax.pie(
             values,
-            textprops=dict(color='w'),
-            colors=['#333F50', '#8497B0', '#ADB9CA'],
+            textprops=dict(
+                color='w',
+                fontname='Calibri',
+            ),
+            colors=['#436AC7', '#FE7500'],
             rotatelabels=True,
             autopct=lambda pct: func(pct, values),
             explode=[0, .15],
             startangle=90,
-            counterclock=False
+            counterclock=False,
         )
 
         ax.legend(
@@ -198,7 +201,7 @@ class ChartCell(Cell):
         plt.setp(autotexts, size=8, weight='bold')
 
         image_stream = io.BytesIO()
-        fig.savefig(image_stream, format='png')
+        fig.savefig(image_stream, format='png', dpi=300)
 
         chart_width = Inches(chart_width)
         chart_height = Inches(chart_height)

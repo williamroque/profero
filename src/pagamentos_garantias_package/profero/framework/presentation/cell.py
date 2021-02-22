@@ -148,7 +148,8 @@ class Cell():
         font.color.rgb = color
         font.underline = False
 
-    def sub_element(self, parent, tagname, **kwargs):
+    @staticmethod
+    def sub_element(parent, tagname, **kwargs):
         """
         Criar elemento XML do PowerPoint com um atributo arbitrário.
         """
@@ -166,7 +167,7 @@ class Cell():
 
         ts = shape.fill._xPr.solidFill
         sF = ts.get_or_change_to_srgbClr()
-        sE = self.sub_element(sF, 'a:alpha', val=str((100 - alpha) * 1000))
+        sE = Cell.sub_element(sF, 'a:alpha', val=str((100 - alpha) * 1000))
 
     def render(self, slide):
         """
