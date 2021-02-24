@@ -8,7 +8,7 @@ class Slide():
     Essa classe controla todas as instâncias da classe `Row` e representa o slide.
     """
 
-    def __init__(self, inputs, slide_id, slide_type, index, background, parent_presentation):
+    def __init__(self, inputs, slide_id, slide_type, index, background, parent_presentation, title=None, table_of_contents_slide=None, shows_in_table_of_contents=True):
         """
         * `inputs (dict)` -- Valores de entrada.
         * `slide_id (str)` -- ID do slide.
@@ -17,6 +17,9 @@ class Slide():
         * `index (int)` -- Posição relativa do slide.
         * `background (str)` -- O caminho do fundo a ser usado.
         * `parent_presentation (Presentation)` -- Presentação que contém esse slide.
+        * `title (str)` -- O título do slide.
+        * `table_of_contents (Slide)` -- O slide 'Temas a Serem Abordados.'
+        * `shows_in_table_of_contents (bool)` -- Determina se o slide aparece no 'Temas a Serem Abordados.'
         """
 
         self.inputs = inputs
@@ -24,6 +27,9 @@ class Slide():
         self.slide_type = slide_type
         self.index = index
         self.parent_presentation = parent_presentation
+        self.title = title
+        self.table_of_contents_slide = table_of_contents_slide
+        self.shows_in_table_of_contents = shows_in_table_of_contents
 
         # Criar um slide novo pelo `python-pptx` de acordo com o tipo de
         # layout definido acima e salvar a instância criada da classe
@@ -80,3 +86,8 @@ class Slide():
 
         for row in self.rows:
             row.render(self.slide)
+
+        if self.shows_in_table_of_contents and self.table_of_contents_slide is not None:
+            self.table_of_contents_slide.add_entry(
+                self.title, [self.index + 1], self
+            )

@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 
 // A ideia aqui é simular o modo de executar do GENSEC
-const subprocess = spawn('python', ['main.py']);
+const subprocess = spawn('python', ['main.py', '-v']);
 
 const MM = 1_000_000;
 
@@ -178,9 +178,9 @@ const input = {
                         'evolucao': 1,
                         'conclusao': 'Concluído',
                         'num-vendas': 248,
-                        'perc-vendas': .943,
-                        'num-estoque': 15,
-                        'perc-estoque': .057,
+                        'perc-vendas': .5314,
+                        'num-estoque': 112,
+                        'perc-estoque': .4686,
                         'estoque': 2.34 * MM,
                         'estoque-ultimas': 2.47 * MM,
                         'num-recebiveis': 103,
@@ -196,6 +196,31 @@ const input = {
             id: 'caracteristicas-ativos',
             inputs: {
                 'date': '07/09/2020',
+                'charts': [
+                    {
+                        'estoque': [
+                            ['Araçari', .09],
+                            ['Araguari', .69],
+                            ['Tangará', .09],
+                            ['Aranguá', .13]
+                        ],
+                        'regiao': [
+                            ['PR', 1],
+                        ],
+                    },
+                    {
+                        'recebiveis': [
+                            ['Araguari', .21],
+                            ['Araçari', .2],
+                            ['Aranguá', .35],
+                            ['Tangará', .24]
+                        ],
+                        'segmento': [
+                            ['LOTEAMENTO ABERTO', .33],
+                            ['CONDOMÍNIO FECHADO', .67]
+                        ]
+                    }
+                ]
             }
         },
         {
@@ -244,18 +269,6 @@ const input = {
             id: 'pagamentos-x-curva',
             inputs: {
                 "recebimento": [
-                    // 1460515.400,
-                    // 1513575.520,
-                    // 1319800.100,
-                    // 1090465.380,
-                    // 982964.990,
-                    // 1110378.050,
-                    // 1405898.990,
-                    // 1347425.9649777,
-                    // 1347425.9649777,
-                    // 1347425.9649777,
-                    // 1347425.9649777,
-                    // 1347425.9649777,
                     ['/Users/jetblack-work/Desktop/boletins/jan-20.csv'],
                     ['/Users/jetblack-work/Desktop/boletins/feb-20.csv'],
                     ['/Users/jetblack-work/Desktop/boletins/mar-20.csv'],
@@ -381,7 +394,7 @@ const input = {
                         0.0
                     ],
                     [
-                        'Jul-20', // values inconsistent after this month
+                        'Jul-20',
                         84630.3060707,
                         0.0,
                         0.0
@@ -429,7 +442,6 @@ subprocess.stdin.end();
 // Escrever erros do programa ao stderr (para poder bifurcar a saída)
 subprocess.stderr.on('data', err => {
     process.stderr.write(err.toString());
-    process.exit(1)
 });
 
 // Escrever stdout do programa ao stdout

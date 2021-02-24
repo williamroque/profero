@@ -1,7 +1,14 @@
-from pptx.util import Cm, Pt, Inches
+from pptx.util import Cm, Inches
 from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.dml.color import RGBColor
+
+import matplotlib.pyplot as plt
+from cycler import cycler
+
+import numpy as np
+
+import io
 
 from profero.framework.presentation.slide import Slide as FSlide
 from profero.framework.presentation.row import Row
@@ -15,25 +22,89 @@ NOTE = """
 """.strip()
 
 
+COLORSCHEMES = [cycler(color=x) for x in [
+    ['#CF918F', '#A74442', '#70568D', '#D7813C'],
+    ['#4472C5', '#70568D', '#87A34C', '#A74442'],
+    ['#91A7CD', '#4470A5', '#4095AD', '#87A34C'],
+    ['#BD4E4C', '#4E80BB', '#87A34C', '#91A7CD']
+]]
+
+
 class ChartCell(Cell):
-    def __init__(self, inputs, slide_width, props, parent_row):
+    def __init__(self, inputs, slide_width, props, index, header, content, parent_row, width, x_offset):
         super().__init__(
             inputs,
             {
-                'width': slide_width,
-                'x_offset': 0
+                'width': width,
+                'x_offset': x_offset
             },
-            'chart', 0,
+            'chart', index,
             parent_row
         )
 
         self.slide_width = slide_width
         self.props = props
 
+        self.width = width
+        self.x_offset = x_offset
+
+        self.index = index
+
+        self.header = header
+        self.content = content
+
     def render(self, slide):
-        slide = self.parent_row.parent_slide
-        slide.table_of_contents_slide.add_entry(
-            slide.title, [slide.index + 1], slide
+        labels, values = list(zip(*self.content))
+
+        chart_width = self.width / Inches(1)
+        chart_height = self.parent_row.height / Inches(1)
+
+        plot_size = 1
+        plot_x = 1/2 - plot_size/2 + .2
+
+        fig = plt.figure(figsize=(chart_width, chart_height))
+        ax = fig.add_axes([plot_x, -.05, plot_size, plot_size])
+
+        def func(pct, _):
+            return '{}%'.format(int(pct))
+
+        print(values)
+
+        wedges, texts, autotexts = ax.pie(
+            values,
+            textprops=dict(
+                color='w',
+                fontname='Calibri',
+            ),
+            colors=COLORSCHEMES[self.index],
+            rotatelabels=True,
+            autopct=lambda pct: func(pct, values),
+            explode=[0] + [.15] * (len(labels) - 1),
+            startangle=90,
+            counterclock=False,
+        )
+
+        ax.legend(
+            wedges,
+            labels,
+            bbox_to_anchor=(-.3, .5),
+            frameon=False
+        )
+
+        plt.setp(autotexts, size=8, weight='bold')
+
+        image_stream = io.BytesIO()
+        fig.savefig(image_stream, format='png', dpi=300)
+
+        chart_width = Inches(chart_width)
+        chart_height = Inches(chart_height)
+
+        slide.shapes.add_picture(
+            image_stream,
+            self.x_offset,
+            self.parent_row.y_offset + self.parent_row.height / 2 - chart_height / 2,
+            chart_width,
+            chart_height
         )
 
 
@@ -44,14 +115,12 @@ class Slide(FSlide):
             'caracteristicas-ativo', 6,
             index,
             None,
-            parent_presentation
+            parent_presentation,
+            'Características dos Ativos',
+            table_of_contents_slide
         )
 
-        self.title = 'Características dos Ativos'
-
         self.props = props
-
-        self.table_of_contents_slide = table_of_contents_slide
 
         slide_height = parent_presentation.presentation.slide_height
         slide_width = parent_presentation.presentation.slide_width
@@ -70,20 +139,36 @@ class Slide(FSlide):
         )
         self.add_row(header_row)
 
-        chart_row = Row(
-            inputs,
-            {
-                'height': .75 * slide_height - note_height,
-                'y_offset': header_row.y_offset + header_row.height
-            },
-            'chart', 1,
-            self
-        )
+        row_count = len(self.props['charts'])
+        chart_height = .75 * slide_height / row_count  - note_height / row_count
+        for i, row in enumerate(self.props['charts']):
+            chart_row = Row(
+                inputs,
+                {
+                    'height': chart_height,
+                    'y_offset': header_row.y_offset + header_row.height + i * chart_height
+                },
+                'chart', 1 + i,
+                self
+            )
 
-        chart_cell = ChartCell(inputs, slide_width, self.props, chart_row)
-        chart_row.add_cell(chart_cell)
+            chart_width = slide_width / len(row.keys())
 
-        self.add_row(chart_row)
+            for j, (header, content) in enumerate(row.items()):
+                chart_cell = ChartCell(
+                    inputs,
+                    slide_width,
+                    self.props,
+                    j,
+                    header,
+                    content,
+                    chart_row,
+                    chart_width,
+                    chart_width * j
+                )
+                chart_row.add_cell(chart_cell)
+
+            self.add_row(chart_row)
 
         note_row = Row(
             inputs,

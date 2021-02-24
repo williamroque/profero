@@ -157,12 +157,6 @@ class TableCell(Cell):
             merge=True
         )
 
-        slide = self.parent_row.parent_slide
-
-        slide.table_of_contents_slide.add_entry(
-            slide.title, [slide.index + 1], self.parent_row.parent_slide
-        )
-
     def add_table_row(self, header, value_1, value_2=None, merge=False):
         header_cell = self.table.cell(self.row_count + 1, 0)
         self.set_text(
@@ -211,12 +205,10 @@ class Slide(FSlide):
             'dados-operacao', 6,
             index,
             None,
-            parent_presentation
+            parent_presentation,
+            'Características da operação',
+            table_of_contents_slide
         )
-
-        self.title = 'Características da operação'
-
-        self.table_of_contents_slide = table_of_contents_slide
 
         primeira_serie = str(self.inputs.get('primeira-serie'))
         segunda_serie = str(self.inputs.get('primeira-serie') + 1)

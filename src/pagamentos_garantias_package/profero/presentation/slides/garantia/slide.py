@@ -217,10 +217,6 @@ class ChartCell(Cell):
             chart_height
         )
 
-        slide.table_of_contents_slide.add_entry(
-            slide.title, [slide.index + 1], slide
-        )
-
 
 class InfoCell(Cell):
     def __init__(self, inputs, slide_width, props, parent_row):
@@ -294,14 +290,12 @@ class Slide(FSlide):
             'garantia', 6,
             index,
             None,
-            parent_presentation
+            parent_presentation,
+            'Garantia',
+            table_of_contents_slide
         )
 
-        self.title = 'Garantia'
-
         self.props = props
-
-        self.table_of_contents_slide = table_of_contents_slide
 
         slide_height = parent_presentation.presentation.slide_height
         slide_width = parent_presentation.presentation.slide_width

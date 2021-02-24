@@ -112,11 +112,6 @@ class TableCell(Cell):
             bold=True
         )
 
-        slide = self.parent_row.parent_slide
-        slide.table_of_contents_slide.add_entry(
-            slide.title, [slide.index + 1], slide
-        )
-
     def add_table_row(self, values, bold=False, color=RGBColor(0x0F, 0x3B, 0x5E), fill_color=None, font_size=Pt(12)):
         for value_i, value in enumerate(values):
             cell = self.table.cell(self.row_count, value_i)
@@ -223,14 +218,12 @@ class Slide(FSlide):
             'direitos-creditorios-garantia', 6,
             index,
             None,
-            parent_presentation
+            parent_presentation,
+            'Direitos Creditórios em Garantia',
+            table_of_contents_slide
         )
 
-        self.title = 'Direitos Creditórios em Garantia'
-
         self.props = props
-
-        self.table_of_contents_slide = table_of_contents_slide
 
         slide_height = parent_presentation.presentation.slide_height
         slide_width = parent_presentation.presentation.slide_width

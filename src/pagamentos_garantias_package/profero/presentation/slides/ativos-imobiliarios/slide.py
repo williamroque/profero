@@ -191,6 +191,8 @@ class TableCell(Cell):
         format_2_perc = lambda x: '{:.2f}%'.format(round(x * 100, 2)).replace('.', ',')
         format_0_perc = lambda x: '{}%'.format(round(x * 100)).replace('.', ',')
 
+        format_types = []
+
         for empr in self.props['empreendimentos']:
             for i in range(self.column_number):
                 self.set_fill_color(self.table.cell(vertical_offset, i), RGBColor(0xFF, 0xFF, 0xFF))
@@ -207,15 +209,18 @@ class TableCell(Cell):
             cidade_cell.merge(
                 self.table.cell(vertical_offset + 1, 1)
             )
+            format_types.append(None)
 
             num_unidades_cell = self.table.cell(vertical_offset, 2)
             self.add_data_text(num_unidades_cell, empr['num-unidades'])
             num_unidades_cell.merge(
                 self.table.cell(vertical_offset + 1, 2)
             )
+            format_types.append('num')
 
             media_m2_cell = self.table.cell(vertical_offset, 3)
             self.add_data_text(media_m2_cell, empr['media-m2'])
+            format_types.append(None)
 
             media_rs_m2_cell = self.table.cell(vertical_offset + 1, 3)
             self.add_data_text(media_rs_m2_cell, empr['media-rs-m2'])
@@ -225,86 +230,111 @@ class TableCell(Cell):
             evolucao_cell.merge(
                 self.table.cell(vertical_offset + 1, 4)
             )
+            format_types.append('perc_0')
 
             conclusao_cell = self.table.cell(vertical_offset, 5)
             self.add_data_text(conclusao_cell, empr['conclusao'])
             conclusao_cell.merge(
                 self.table.cell(vertical_offset + 1, 5)
             )
+            format_types.append(None)
 
             num_vendas_cell = self.table.cell(vertical_offset, 6)
             self.add_data_text(num_vendas_cell, empr['num-vendas'])
             num_vendas_cell.merge(
                 self.table.cell(vertical_offset + 1, 6)
             )
+            format_types.append('num')
 
             perc_vendas_cell = self.table.cell(vertical_offset, 7)
             self.add_data_text(perc_vendas_cell, empr['perc-vendas'], f=format_2_perc)
             perc_vendas_cell.merge(
                 self.table.cell(vertical_offset + 1, 7)
             )
+            format_types.append('perc_2')
 
             num_estoque_cell = self.table.cell(vertical_offset, 8)
             self.add_data_text(num_estoque_cell, empr['num-estoque'])
             num_estoque_cell.merge(
                 self.table.cell(vertical_offset + 1, 8)
             )
+            format_types.append('num')
 
             perc_estoque_cell = self.table.cell(vertical_offset, 9)
             self.add_data_text(perc_estoque_cell, empr['perc-estoque'], f=format_2_perc)
             perc_estoque_cell.merge(
                 self.table.cell(vertical_offset + 1, 9)
             )
+            format_types.append('perc_2')
 
             estoque_cell = self.table.cell(vertical_offset, 10)
             self.add_data_text(estoque_cell, empr['estoque'], f=format_currency)
             estoque_cell.merge(
                 self.table.cell(vertical_offset + 1, 10)
             )
+            format_types.append('currency')
 
             estoque_ultimas_cell = self.table.cell(vertical_offset, 11)
             self.add_data_text(estoque_ultimas_cell, empr['estoque-ultimas'], f=format_currency)
             estoque_ultimas_cell.merge(
                 self.table.cell(vertical_offset + 1, 11)
             )
+            format_types.append('currency')
 
             num_recebiveis_cell = self.table.cell(vertical_offset, 12)
             self.add_data_text(num_recebiveis_cell, empr['num-recebiveis'])
             num_recebiveis_cell.merge(
                 self.table.cell(vertical_offset + 1, 12)
             )
+            format_types.append('num')
 
             recebiveis_cell = self.table.cell(vertical_offset, 13)
             self.add_data_text(recebiveis_cell, empr['recebiveis'], f=format_currency)
             recebiveis_cell.merge(
                 self.table.cell(vertical_offset + 1, 13)
             )
+            format_types.append('currency')
 
             recebiveis_estoque_cell = self.table.cell(vertical_offset, 14)
             self.add_data_text(recebiveis_estoque_cell, empr['recebiveis-estoque'], f=format_currency)
             recebiveis_estoque_cell.merge(
                 self.table.cell(vertical_offset + 1, 14)
             )
+            format_types.append('currency')
 
             contrato_cell = self.table.cell(vertical_offset, 15)
             self.add_data_text(contrato_cell, empr['contrato'], f=format_currency)
             contrato_cell.merge(
                 self.table.cell(vertical_offset + 1, 15)
             )
+            format_types.append('currency')
 
             ltv_cell = self.table.cell(vertical_offset, 16)
             self.add_data_text(ltv_cell, empr['ltv'], f=format_0_perc)
             ltv_cell.merge(
                 self.table.cell(vertical_offset + 1, 16)
             )
+            format_types.append('perc_0')
 
             vertical_offset += 2
 
         total_cell = self.table.cell(vertical_offset, 0)
         self.add_data_text(total_cell, 'Total/Média', bold=True)
 
+        ignored_keys = ['media-rs-m2', 'nome']
+        zipped_empr = list(zip(*([v for k, v in x.items() if k not in ignored_keys] for x in self.props['empreendimentos'])))
+
         for i in range(self.column_number):
             cell = self.table.cell(vertical_offset, i)
+
+            if i > 0:
+                format_type = format_types[i - 1]
+                if format_type in ['currency', 'num']:
+                    total = sum(zipped_empr[i - 1])
+                    self.add_data_text(cell, total, f=(format_currency if format_type == 'currency' else str), bold=True)
+                elif format_type in ['perc_0', 'perc_2']:
+                    total = sum(zipped_empr[i - 1])
+                    self.add_data_text(cell, total / len(zipped_empr[i - 1]), f=(format_0_perc if format_type == 'perc_0' else format_2_perc), bold=True)
 
             self.set_fill_color(cell, RGBColor(0xB8, 0xD7, 0xF0))
             set_cell_border(cell, 'FFFFFF', '0')
@@ -329,14 +359,12 @@ class Slide(FSlide):
             'ativos-imobiliarios', 6,
             index,
             None,
-            parent_presentation
+            parent_presentation,
+            'Ativos Imobiliários',
+            table_of_contents_slide
         )
 
-        self.title = 'Ativos Imobiliários'
-
         self.props = props
-
-        self.table_of_contents_slide = table_of_contents_slide
 
         slide_height = parent_presentation.presentation.slide_height
         slide_width = parent_presentation.presentation.slide_width
