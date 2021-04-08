@@ -22,16 +22,16 @@ NOTE = """
 """.strip()
 
 
-COLORSCHEMES = [cycler(color=x) for x in [
+COLORSCHEMES = [
     ['#CF918F', '#A74442', '#70568D', '#D7813C'],
     ['#4472C5', '#70568D', '#87A34C', '#A74442'],
     ['#91A7CD', '#4470A5', '#4095AD', '#87A34C'],
     ['#BD4E4C', '#4E80BB', '#87A34C', '#91A7CD']
-]]
+]
 
 
 class ChartCell(Cell):
-    def __init__(self, inputs, slide_width, props, index, header, content, parent_row, width, x_offset):
+    def __init__(self, inputs, slide_width, props, index, header, content, parent_row, width, x_offset, general_index):
         super().__init__(
             inputs,
             {
@@ -48,7 +48,7 @@ class ChartCell(Cell):
         self.width = width
         self.x_offset = x_offset
 
-        self.index = index
+        self.general_index = general_index
 
         self.header = header
         self.content = content
@@ -63,12 +63,21 @@ class ChartCell(Cell):
         plot_x = 1/2 - plot_size/2 + .2
 
         fig = plt.figure(figsize=(chart_width, chart_height))
-        ax = fig.add_axes([plot_x, -.05, plot_size, plot_size])
+        ax = fig.add_axes([plot_x, 0, plot_size, plot_size])
+
+        ax.text(
+            -3.2, .6,
+            self.header.upper(),
+            {
+                'family': 'Calibri',
+                'color': '#003960',
+                'weight': 'bold',
+                'size': 20
+            }
+        )
 
         def func(pct, _):
             return '{}%'.format(int(pct))
-
-        print(values)
 
         wedges, texts, autotexts = ax.pie(
             values,
@@ -76,7 +85,7 @@ class ChartCell(Cell):
                 color='w',
                 fontname='Calibri',
             ),
-            colors=COLORSCHEMES[self.index],
+            colors=COLORSCHEMES[self.general_index],
             rotatelabels=True,
             autopct=lambda pct: func(pct, values),
             explode=[0] + [.15] * (len(labels) - 1),
@@ -130,7 +139,7 @@ class Slide(FSlide):
         header_row = HeaderRow(
             inputs,
             {
-                'height': .25 * slide_height,
+                'height': .2 * slide_height,
                 'y_offset': Cm(0)
             }, 0,
             self.title,
@@ -140,7 +149,9 @@ class Slide(FSlide):
         self.add_row(header_row)
 
         row_count = len(self.props['charts'])
-        chart_height = .75 * slide_height / row_count  - note_height / row_count
+        chart_height = .8 * slide_height / row_count  - note_height / row_count
+
+        general_index = 0
         for i, row in enumerate(self.props['charts']):
             chart_row = Row(
                 inputs,
@@ -164,9 +175,12 @@ class Slide(FSlide):
                     content,
                     chart_row,
                     chart_width,
-                    chart_width * j
+                    chart_width * j,
+                    general_index
                 )
                 chart_row.add_cell(chart_cell)
+
+                general_index += 1
 
             self.add_row(chart_row)
 

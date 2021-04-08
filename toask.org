@@ -1,0 +1,32 @@
+** Estoque
+- Database with current stock
+- Updated comparing previous and next month's saldo devedor and sales and
+  quitaçőes to find out difference in stock → update database
+- Compare with saldo demonstrativo (empr, quadra, lote, m2, valor de venda)
+  - Get média R$/M2
+  - Stock = from mean*m2 in lote = VGV
+    - Sum correponds to R$/Estoque
+- Database with stock
+  - Saldo demonstrativo shows sold stock, if in saldo demonstrativo, remove
+    from stock
+- If in saldo demonstrativo from previous month but not current, we check in
+  distratos
+  - If in distratos, return to database
+- To populate initially, use existing spreadsheet
+- To get vendas, get valor compra from saldo demonstrativo, make sure month is
+  correct
+- Sum over all valor compra for month per empreendimento to get venda for
+  month
+- To get # vendas, count from saldo demonstrativo the amount of entries with
+  given empreendimento, remove entries with quitado rather than ativo or
+  inadimplente
+- Saldo p/ quitacao / valor compra atualizado to get LTV when available
+- average of [Valor compra / m^2 (value of each m^2) per empreendimento] * m^2
+  of lote = valor atualizado
+- get m^2 from report for each operation
+- get recebiveis from saldo devedor, saldo p/ quitacao
+- # contratos, saldo demonstrativo, number per empreendimento
+- filter inadimplente, subtract vencimento from current date, classify by
+  amount of days → relatorio de inadimplencia
+- planilha PU → get info for pagamento x curva (mensal)
+- also get boletim de recebimento for recebimento (mensal)

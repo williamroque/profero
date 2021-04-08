@@ -39,7 +39,10 @@ class Parser():
         for section_id, section in self.schema['sections'].items():
             # Configurar a linha especificada pelo modelo como o cabeçalho
             column, query = section['header-query']
-            df.columns = df.loc[df[df.columns[column]] == query].iloc[0]
+
+            match = df[df.columns[column]] == query
+            df.columns = df.loc[match].iloc[0]
+            df.drop(df.index[match].tolist())
 
             result[section_id] = {}
 
@@ -68,10 +71,17 @@ class Parser():
                 elif group['dtype'] == 'float':
                     # Já que o tipo é decimal/numérico (ver ^), filtrar a coluna por valores
                     # numéricos
-                    df[group['query']][df[group['query']].apply(lambda x: str(x).isnumeric())]
 
-                    # Remover todos os valores `NaN` criados acima e por
-                    # células em branco
+                    def check_float(x):
+                        try:
+                            float(str(x).replace(',', '').replace("'", ''))
+                            return True
+                        except ValueError:
+                            return False
+
+                    df[group['query']] = df[group['query']][df[group['query']].apply(check_float)]
+
+                    # Remover valores `NaN`
                     df = df.dropna(subset=[group['query']])
 
                     # Converter a coluna em uma matriz `numpy` unidimensional de valores

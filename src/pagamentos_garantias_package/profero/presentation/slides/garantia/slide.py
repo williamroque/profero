@@ -48,8 +48,6 @@ class ChartCell(Cell):
         self.props = props
 
     def render(self, slide):
-        slide = self.parent_row.parent_slide
-
         values = np.array([
             self.props['recebiveis-adimplidos'],
             self.props['recebiveis-inadimplidos'],
@@ -209,7 +207,7 @@ class ChartCell(Cell):
         chart_width = Inches(chart_width)
         chart_height = Inches(chart_height)
 
-        slide.slide.shapes.add_picture(
+        slide.shapes.add_picture(
             image_stream,
             self.slide_width / 2 - chart_width / 2,
             self.parent_row.y_offset + self.parent_row.height / 2 - chart_height / 2,

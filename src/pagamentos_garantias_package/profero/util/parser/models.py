@@ -36,3 +36,30 @@ saldo_schema = {
         }
     }
 }
+
+estoque_schema = {
+    'file-type': 'xslx',
+    'sections': {
+        'root': {
+            'header-query': [1, 'EMPREENDIMENTO'],
+            'groups': {
+                'empreendimento': {
+                    'query': 'EMPREENDIMENTO',
+                    'dtype': 'string'
+                },
+                'lote': {
+                    'query': 'LOTE',
+                    'dtype': 'float'
+                },
+                'm2': {
+                    'query': 'M2',
+                    'dtype': 'float'
+                },
+                'vgv': {
+                    'query': 'VGV',
+                    'dtype': 'float'
+                }
+            }
+        }
+    }
+}

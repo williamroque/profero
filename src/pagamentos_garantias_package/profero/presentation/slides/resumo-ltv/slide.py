@@ -11,11 +11,11 @@ from profero.presentation.slides.common.note import NoteCell
 
 
 NOTE = """
-➢ <++>
+➢ LTV Últimas Vendas: baseado em todas as vendas dos últimos 6 meses.
 """.strip()
 
 
-class <++>(Cell):
+class TableCell(Cell):
     def __init__(self, inputs, slide_width, props, parent_row):
         super().__init__(
             inputs,
@@ -23,7 +23,7 @@ class <++>(Cell):
                 'width': slide_width,
                 'x_offset': 0
             },
-            <++>, 0,
+            'table', 0,
             parent_row
         )
 
@@ -41,11 +41,11 @@ class Slide(FSlide):
     def __init__(self, inputs, index, props, table_of_contents_slide, parent_presentation):
         super().__init__(
             inputs,
-            <++>, 6,
+            'resumo-ltv', 6,
             index,
             None,
             parent_presentation,
-            <++>,
+            'Resumo LTV',
             table_of_contents_slide
         )
 
@@ -68,37 +68,52 @@ class Slide(FSlide):
         )
         self.add_row(header_row)
 
-        <++> = Row(
+        tables_height = .75 * slide_height - note_height
+
+        lotes_row = Row(
             inputs,
             {
-                'height': .75 * slide_height - note_height,
+                'height': tables_height / 2,
                 'y_offset': header_row.y_offset + header_row.height
             },
-            <++>, 1,
+            'lotes', 1,
             self
         )
 
-        <++> = <++>(inputs, slide_width, self.props, <++>)
-        <++>.add_cell(<++>)
+        lotes_table = TableCell(inputs, slide_width, self.props, lotes_row)
+        lotes_row.add_cell(lotes_table)
 
-        self.add_row(<++>)
+        self.add_row(lotes_row)
+
+        saldo_row = Row(
+            inputs,
+            {
+                'height': tables_height / 2,
+                'y_offset': lotes_row.y_offset + lotes_row.height
+            },
+            'saldo', 2,
+            self
+        )
+
+        saldo_table = TableCell(inputs, slide_width, self.props, saldo_row)
+        saldo_row.add_cell(saldo_table)
+
+        self.add_row(saldo_row)
 
         note_row = Row(
             inputs,
             {
                 'height': note_height,
-                'y_offset': <++>.y_offset + <++>.height
+                'y_offset': saldo_row.y_offset + saldo_row.height
             },
-            'note', 2,
+            'note', 3,
             self
         )
 
         note_cell = NoteCell(
             inputs,
             slide_width,
-            NOTE.format(
-                <++>
-            ),
+            NOTE,
             note_row
         )
         note_row.add_cell(note_cell)

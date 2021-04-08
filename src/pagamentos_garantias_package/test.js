@@ -6,7 +6,7 @@ const subprocess = spawn('python', ['main.py', '-v']);
 const MM = 1_000_000;
 
 // O formato deste objeto deve refletir o gerado automaticamente pelo GENSEC
-const input = {
+let input = {
     'primeira-serie': 16,
     'output-path': '/Users/jetblack-work/Desktop/slideshow.pptx',
     'project-logo': '/Users/jetblack-work/Desktop/project_logo.png',
@@ -108,6 +108,7 @@ const input = {
             id: 'ativos-imobiliarios',
             inputs: {
                 'date': '07/09/2020',
+                'estoque-planilha': '',
                 'empreendimentos': [
                     {
                         'nome': 'Araçari',
@@ -198,24 +199,24 @@ const input = {
                 'date': '07/09/2020',
                 'charts': [
                     {
-                        'estoque': [
+                        'Estoque': [
                             ['Araçari', .09],
                             ['Araguari', .69],
                             ['Tangará', .09],
                             ['Aranguá', .13]
                         ],
-                        'regiao': [
+                        'Região': [
                             ['PR', 1],
                         ],
                     },
                     {
-                        'recebiveis': [
+                        'Recebíveis': [
                             ['Araguari', .21],
                             ['Araçari', .2],
                             ['Aranguá', .35],
                             ['Tangará', .24]
                         ],
-                        'segmento': [
+                        'Segmento': [
                             ['LOTEAMENTO ABERTO', .33],
                             ['CONDOMÍNIO FECHADO', .67]
                         ]
@@ -431,9 +432,88 @@ const input = {
                     ],
                 ]
             }
-        }
+        },
+        {
+            id: 'vendas',
+            inputs: {
+                empreendimentos: [
+                    'Araguari',
+                    'Aranguá',
+                    'Tangará',
+                    'Araçari'
+                ],
+                sales: [
+                    [
+                        'Fev-20',
+                        1544833.28,
+                        4, 2, 4, 1
+                    ],
+                    [
+                        'Mar-20',
+                        1037718.28,
+                        3, 2, 0, 2
+                    ],
+                    [
+                        'Abr-20',
+                        0,
+                        0, 0, 0, 0
+                    ],
+                    [
+                        'Mai-20',
+                        422060,
+                        1, 0, 2, 0
+                    ],
+                    [
+                        'Jun-20',
+                        1762500.2,
+                        7, 4, 2, 1
+                    ],
+                    [
+                        'Jul-20',
+                        1363095.23,
+                        6, 3, 2, 0
+                    ],
+                    [
+                        'Ago-20',
+                        3175360.94,
+                        11, 7, 0, 5
+                    ],
+                    [
+                        'Set-20',
+                        2115948.87,
+                        5, 9, 1, 1
+                    ],
+                    [
+                        'Out-20',
+                        3_835_622.3,
+                        18, 7, 2, 1
+                    ],
+                    [
+                        'Nov-20',
+                        2_037_765.58,
+                        9, 5, 0, 0
+                    ],
+                    [
+                        'Dez-20',
+                        2_557_326.88,
+                        10, 4, 1, 1
+                    ],
+                ]
+            }
+        },
+        {
+            id: 'resumo-ltv',
+            inputs: {
+                
+            }
+        },
     ]
 };
+
+input.slides = input.slides.slice(
+    process.argv[2] | 0,
+    ...(process.argv.length > 3 ? [process.argv[3] | 0] : [])
+);
 
 // Escrever o objeto de dados ao stdin do programa
 subprocess.stdin.write(JSON.stringify(input));

@@ -6,6 +6,9 @@ from pptx.enum.shapes import MSO_SHAPE
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.dml.color import RGBColor
 
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR')
+
 
 class Cell():
     """
@@ -168,6 +171,72 @@ class Cell():
         ts = shape.fill._xPr.solidFill
         sF = ts.get_or_change_to_srgbClr()
         sE = Cell.sub_element(sF, 'a:alpha', val=str((100 - alpha) * 1000))
+
+    def create_table(self, slide, row_count, col_count, width, height, y_correction=0):
+        self.table = slide.shapes.add_table(
+            row_count,
+            col_count,
+            self.x_offset + self.width / 2 - width / 2,
+            self.parent_row.y_offset +\
+                self.parent_row.height / 2 -\
+                height / 2 +\
+                y_correction,
+            width, height
+        ).table
+
+        self.row_count = 0
+
+        return self.table
+
+    def add_table_row(self, values, header=None, bold=False, color=RGBColor(0x0F, 0x3B, 0x5E), fill_color=None, font_size=Pt(9), sub_hyphen=False, format_currency=False):
+        cell_offset = 0
+
+        if header != None:
+            cell = self.table.cell(self.row_count, cell_offset)
+            cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+
+            self.set_text(
+                cell,
+                str(header),
+                alignment=PP_ALIGN.LEFT,
+                font_family='Calibri',
+                font_size=font_size - Pt(1),
+                color=color,
+                bold=True
+            )
+
+            cell_offset += 1
+
+        for value_i, value in enumerate(values):
+            cell = self.table.cell(self.row_count, cell_offset)
+            cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+
+            if sub_hyphen and value == 0:
+                value = '-'
+
+            if format_currency and value != '-':
+                value = locale.format_string(
+                    'R$ %.2f',
+                    value,
+                    True
+                )
+
+            self.set_text(
+                cell,
+                str(value),
+                alignment=PP_ALIGN.CENTER,
+                font_family='Calibri',
+                font_size=font_size,
+                color=color,
+                bold=bold
+            )
+
+            if fill_color != None:
+                self.set_fill_color(cell, fill_color)
+
+            cell_offset += 1
+
+        self.row_count += 1
 
     def render(self, slide):
         """

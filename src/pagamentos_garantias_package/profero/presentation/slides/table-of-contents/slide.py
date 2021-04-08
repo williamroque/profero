@@ -52,7 +52,7 @@ class EntryCell(Cell):
         CHARS_PER_ROW = 113
 
         # Remover marcas de substituições (ver `header.py`)
-        title = re.sub(r'_(.+)_', r'\1', title)
+        title = re.sub(r'_(.+)_', r'\1', title) + ' '
 
         pages.sort()
 
@@ -72,7 +72,7 @@ class EntryCell(Cell):
         # Texto com os números das paginas
         self.text += '\n{}{}'.format(
             title,
-            page_str.rjust(CHARS_PER_ROW - len(title), '.')
+            '.' * (CHARS_PER_ROW - len(title) - len(page_str) - 1) + ' ' + page_str
         )
 
         self.set_text(
